@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мумтоз Наволар - Чойхона</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #c0392b; --dark: #0f0f1a; --gold: #f1c40f; --card-bg: #16213e; }
+        body { font-family: 'Times New Roman', serif; background: var(--dark); color: #e0e0e0; margin: 0; }
+        
+        header { background: #1a1a2e; padding: 20px; text-align: center; border-bottom: 2px solid var(--gold); }
+        .nav-btn { 
+            color: white; text-decoration: none; padding: 10px 18px; border-radius: 25px; 
+            font-family: sans-serif; font-size: 14px; margin: 0 5px; 
+            background: rgba(255,255,255,0.1); transition: 0.3s;
+        }
+        .nav-btn:hover, .nav-btn.active { background: var(--primary); color: var(--gold); }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .classic-header { text-align: center; margin-bottom: 50px; }
+        .classic-header h1 { font-size: 36px; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; }
+        .classic-header p { font-style: italic; color: #bdc3c7; }
+
+        /* ВИДЕОЛАР УЧУН ТЎҒРИЛАНГАН СЕТКА */
+        .video-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 25px; 
+        }
+        
+        .video-card { 
+            background: var(--card-bg); 
+            border-radius: 15px; 
+            overflow: hidden; 
+            border: 1px solid rgba(241, 196, 15, 0.1); 
+            transition: 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .video-card:hover { transform: translateY(-8px); border-color: var(--gold); }
+        
+        /* Видео нисбатини 16:9 қилиб сақлайди ва кенгайиб кетишдан асрайди */
+        .iframe-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; }
+        .iframe-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        
+        .video-info { padding: 18px; text-align: center; }
+        .video-title { font-size: 19px; color: var(--gold); margin: 0 0 10px 0; line-height: 1.3; }
+        .video-desc { font-size: 14px; color: #bdc3c7; line-height: 1.5; height: 45px; overflow: hidden; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="main-nav">
+        <a href="index.html" class="nav-btn">Асосий</a>
+        <a href="classic.html" class="nav-btn active">Мумтоз наволар</a>
+        <a href="poetry.html" class="nav-btn">Шеърият</a>
+        <a href="radio.html" class="nav-btn">Радио</a>
+    </div>
+</header>
+
+<div class="container">
+    <div class="classic-header">
+        <h1><i class="fas fa-music"></i> Мумтоз Наволар</h1>
+        <p>Ўлмас мерос, қалб ороми ва миллий ифтихор</p>
+    </div>
+
+    <div class="video-grid" id="classic-feed">
+        </div>
+</div>
+
+<script>
+    function loadClassic() {
+        const posts = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
+        const feed = document.getElementById('classic-feed');
+        
+        // Админдан 'classic' категорияси билан келган видеоларни оламиз
+        const filtered = posts.filter(p => p.category === 'classic');
+
+        if(filtered.length === 0) {
+            feed.innerHTML = "<div style='grid-column: 1/-1; text-align:center; padding: 50px;'><i class='fas fa-compact-disc fa-spin fa-3x' style='color:var(--gold);'></i><p style='margin-top:20px;'>Мумтоз наволар юкланмоқда ёки ҳали қўшилмаган...</p></div>";
+            return;
+        }
+
+        feed.innerHTML = "";
+        filtered.reverse().forEach(p => {
+            if(p.video) {
+                feed.innerHTML += `
+                    <div class="video-card">
+                        <div class="iframe-container">
+                            <iframe src="https://www.youtube.com/embed/${p.video}" 
+                                    title="YouTube video player" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                        <div class="video-info">
+                            <h3 class="video-title">${p.title}</h3>
+                            <p class="video-desc">${p.content.substring(0, 100)}...</p>
+                        </div>
+                    </div>`;
+            }
+        });
+    }
+    window.onload = loadClassic;
+</script>
+
+</body>
+</html>
