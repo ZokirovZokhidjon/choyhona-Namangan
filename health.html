@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Саломатлик - Чойхона</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #27ae60; --dark: #2c3e50; --bg: #f9fbf9; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; }
+        header { background: var(--dark); padding: 15px; text-align: center; }
+        .nav-btn { color: white; text-decoration: none; padding: 10px 15px; border-radius: 20px; font-size: 14px; margin: 0 5px; background: rgba(255,255,255,0.1); }
+        .nav-btn.active { background: var(--primary); }
+        
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+        .health-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-top: 5px solid var(--primary); }
+        .card img { width: 100%; height: 200px; object-fit: cover; }
+        .card-content { padding: 20px; }
+        .card-content h3 { margin: 0 0 10px; color: var(--dark); }
+        .card-content p { color: #666; font-size: 14px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="index.html" class="nav-btn">Асосий</a>
+    <a href="health.html" class="nav-btn active">Саломатлик</a>
+    <a href="poetry.html" class="nav-btn">Шеърият</a>
+    <a href="radio.html" class="nav-btn">Радио</a>
+</header>
+
+<div class="container">
+    <h1 style="text-align: center; color: var(--primary);"><i class="fas fa-heartbeat"></i> Саломатлик бурчаги</h1>
+    <div class="health-grid" id="health-feed"></div>
+</div>
+
+<script>
+    function loadHealth() {
+        const posts = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
+        const feed = document.getElementById('health-feed');
+        const filtered = posts.filter(p => p.category === 'health');
+
+        if(filtered.length === 0) {
+            feed.innerHTML = "<p>Ҳозирча тиббий мақолалар йўқ.</p>";
+            return;
+        }
+
+        feed.innerHTML = "";
+        filtered.reverse().forEach(p => {
+            let img = p.image || 'https://images.unsplash.com/photo-1505751172107-5739a00726b1?q=80&w=1000';
+            feed.innerHTML += `
+                <div class="card">
+                    <img src="${img}">
+                    <div class="card-content">
+                        <h3>${p.title}</h3>
+                        <p>${p.content.substring(0, 120)}...</p>
+                        <small style="color: #999;">${p.date}</small>
+                    </div>
+                </div>`;
+        });
+    }
+    window.onload = loadHealth;
+</script>
+</body>
+</html>

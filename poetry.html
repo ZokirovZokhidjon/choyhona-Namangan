@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Шеърият - Чойхона</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #8e44ad; --dark: #2c3e50; --bg: #fffaf0; }
+        body { font-family: 'Georgia', serif; background: var(--bg); margin: 0; }
+        header { background: var(--dark); padding: 15px; text-align: center; font-family: sans-serif; }
+        .nav-btn { color: white; text-decoration: none; padding: 10px 15px; border-radius: 20px; font-size: 14px; margin: 0 5px; background: rgba(255,255,255,0.1); }
+        .nav-btn.active { background: var(--primary); }
+        
+        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .poem-card { background: white; padding: 40px; border-radius: 10px; border-left: 8px solid var(--primary); margin-bottom: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .poem-title { color: var(--primary); font-size: 24px; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .poem-text { white-space: pre-line; line-height: 2; font-size: 18px; font-style: italic; color: #34495e; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="index.html" class="nav-btn">Асосий</a>
+    <a href="poetry.html" class="nav-btn active">Шеърият</a>
+    <a href="cockes.html" class="nav-btn">Таомлар</a>
+    <a href="radio.html" class="nav-btn">Радио</a>
+</header>
+
+<div class="container">
+    <h1 style="text-align: center; color: var(--primary); font-style: normal;"><i class="fas fa-feather-alt"></i> Шеърият Гульшани</h1>
+    <div id="poetry-feed"></div>
+</div>
+
+<script>
+    function loadPoetry() {
+        const posts = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
+        const feed = document.getElementById('poetry-feed');
+        const filtered = posts.filter(p => p.category === 'poetry');
+
+        if(filtered.length === 0) {
+            feed.innerHTML = "<p style='text-align:center;'>Бу ерда шеърлар тез орада пайдо бўлади.</p>";
+            return;
+        }
+
+        feed.innerHTML = "";
+        filtered.reverse().forEach(p => {
+            feed.innerHTML += `
+                <div class="poem-card">
+                    <div class="poem-title">${p.title}</div>
+                    <div class="poem-text">${p.content}</div>
+                    <p style="margin-top:20px; font-size:12px; color:#999; font-family:sans-serif;">Сана: ${p.date}</p>
+                </div>`;
+        });
+    }
+    window.onload = loadPoetry;
+</script>
+</body>
+</html>
