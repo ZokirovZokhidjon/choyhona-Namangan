@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ширин таомлар - Чойхона Кулинарияси</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --cooking-color: #e67e22; --dark: #2c3e50; }
+        body { 
+            background: #fdf2e9; margin: 0; padding: 0; 
+            font-family: 'Segoe UI', sans-serif; text-align: center; 
+        }
+        
+        header { 
+            background: var(--cooking-color); color: white; padding: 40px 20px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+        }
+        
+        .back-btn { 
+            position: absolute; top: 20px; left: 20px; color: white; 
+            text-decoration: none; font-weight: bold; border: 2px solid white; 
+            padding: 8px 15px; border-radius: 20px; transition: 0.3s;
+        }
+        .back-btn:hover { background: white; color: var(--cooking-color); }
+
+        .container { max-width: 900px; margin: 30px auto; padding: 0 15px; }
+
+        /* Рецепт карточкаси */
+        .recipe-card { 
+            background: white; border-radius: 20px; overflow: hidden; 
+            margin-bottom: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); 
+            text-align: left; transition: 0.3s;
+        }
+        .recipe-card:hover { transform: translateY(-5px); }
+        .recipe-img { width: 100%; height: 400px; object-fit: cover; }
+        .recipe-body { padding: 25px; }
+        .recipe-badge { 
+            background: var(--cooking-color); color: white; 
+            padding: 5px 15px; border-radius: 15px; font-size: 12px; font-weight: bold; 
+        }
+        .recipe-title { margin: 15px 0; color: var(--dark); font-size: 26px; }
+        .recipe-text { color: #555; line-height: 1.8; font-size: 17px; white-space: pre-line; }
+        
+        .video-box { margin-top: 20px; border-radius: 15px; overflow: hidden; background: #000; }
+        .video-box iframe { width: 100%; aspect-ratio: 16/9; border: none; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Асосий саҳифа</a>
+    <i class="fas fa-utensils fa-3x"></i>
+    <h1>ПАҲ-ПАҲ, ШИРИН ТАОМЛАР!</h1>
+    <p>Энг сара рецептлар ва кулинария сирлари</p>
+</header>
+
+<div class="container" id="cooking-feed">
+    <h6>Корейс ХЭси </h6>
+    <p>Зарур масаллиқлар:
+Судак балиғи лахми (филе) – 200 г
+
+Пиёз (бош пиёз) – 50 г
+
+Кўк пиёз – 20 г
+
+Қизил булғор қалампири – 60 г
+
+Саримсоқпиёз (чеснок) – 30 г (2-3 бўлакча)
+
+Янги кашнич – таъбга кўра
+
+Туз – 0,5 ош қошиқ (5 г)
+
+Шакар – 1 ош қошиқ (10 г)
+
+Мурч – таъбга кўра
+
+Қуритилган кашнич уруғи (янчилган) – 1.5 чой қошиқ (3 г)
+
+Ўсимлик мойи – 20 г
+
+Сирка эссенцияси (уксус) – 1.5 ош қошиқ (15 мл)
+
+Қалампирли мой (аччиқ мой) – 20 г
+
+Қалампирли мой тайёрлаш учун:
+Ўсимлик мойи – 250 мл
+
+Қуритилган қизил қалампир (кукун) – 50 г (тўлдирилган 4 ош қошиқ)
+
+
+Ингредиенты:
+Филе судака – 200 г
+Лук репчатый – 50 г
+Лук зеленый – 20 г
+Перец красный болгарский – 60 г
+Чеснок – 30 г (2-3 дольки)
+Кинза свежая - по вкусу
+Соль – 0,5 ст.ложки (5г)
+Сахар – 1 ст.ложка (10г)
+Черный перец – по вкусу
+Кинза сухая молотая – 1.5 ч.л (3г)
+Масло растительное – 20 г
+Уксусная эссенция – 1.5 ст.л (15мл)
+Масло перцовое – 20 г
+
+Для перцового масла:
+Масло растительное – 250 мл
+Перец сухой красный – 50 г (4 ст.л с верхом)</p>
+</div>
+
+<script>
+    function loadCookingPosts() {
+        const posts = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
+        const feed = document.getElementById('cooking-feed');
+        
+        // ФАҚАТ 'cooking' категориясини ажратиб оламиз
+        const cookingPosts = posts.filter(p => p.category === 'cooking');
+
+        if (cookingPosts.length === 0) {
+            feed.innerHTML = `
+                <div style="padding: 50px; background: white; border-radius: 20px;">
+                    <i class="fas fa-cookie-bite fa-4x" style="color: #ddd;"></i>
+                    <h3>Ҳозирча рецептлар йўқ.</h3>
+                    <p>Админ панелдан "Ширин таомлар" бўлимини танлаб рецепт қўшинг.</p>
+                </div>`;
+            return;
+        }
+
+        feed.innerHTML = "";
+        cookingPosts.reverse().forEach(post => {
+            const videoHTML = post.video ? `
+                <div class="video-box">
+                    <iframe src="https://www.youtube.com/embed/${post.video}" allowfullscreen></iframe>
+                </div>` : '';
+
+            const imageHTML = post.image ? `<img src="${post.image}" class="recipe-img">` : '';
+
+            feed.innerHTML += `
+                <div class="recipe-card">
+                    ${imageHTML}
+                    <div class="recipe-body">
+                        <span class="recipe-badge">КУЛИНАРИЯ</span>
+                        <h2 class="recipe-title">${post.title}</h2>
+                        <div class="recipe-text">${post.content}</div>
+                        ${videoHTML}
+                        <hr style="margin-top:20px; border: 0; border-top: 1px solid #eee;">
+                        <small style="color: #999;"><i class="far fa-clock"></i> ${post.date}</small>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    window.onload = loadCookingPosts;
+</script>
+
+</body>
+</html>

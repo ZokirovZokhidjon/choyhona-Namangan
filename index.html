@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чойхона - Асосий Саҳифа</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; text-align: center;
+        }
+        header { padding: 30px; background: rgba(255,255,255,0.2); }
+        .logochay img { border-radius: 50%; border: 5px solid #fff; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        
+        /* Меню */
+        .menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 20px; }
+        .menu button { 
+            width: 160px; height: 50px; border-radius: 10px; border: none; background: white; 
+            cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.3s;
+        }
+        .menu button:hover { background: #d35400; color: white; }
+        .menu a { text-decoration: none; color: inherit; display: block; width: 100%; height: 100%; line-height: 50px; }
+
+        /* Хабарлар лентаси */
+        .container { max-width: 850px; margin: 20px auto; padding: 15px; }
+        .post-card { 
+            background: white; border-radius: 20px; padding: 25px; margin-bottom: 30px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: left; 
+        }
+        .post-card img { width: 100%; border-radius: 15px; margin: 15px 0; display: block; }
+        .video-container { 
+            position: relative; padding-bottom: 56.25%; height: 0; 
+            overflow: hidden; border-radius: 15px; background: #000; margin: 15px 0; 
+        }
+        .video-container iframe { position: absolute; top:0; left:0; width:100%; height:100%; border:none; }
+        .post-date { font-size: 13px; color: #888; border-bottom: 1px solid #eee; padding-bottom: 10px; display: block; }
+        h2 { color: #2c3e50; margin: 15px 0; }
+        p { color: #444; line-height: 1.7; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logochay">
+            <img src="logo.webp" alt="logo" width="150" height="150" onerror="this.src='https://via.placeholder.com/150'">
+            <h1>ЧОЙХОНАМИЗГА ХУШ КЕЛИБСИЗ!!!</h1>
+        </div>
+    </header>
+
+    <nav class="menu">
+        <button><a href="index.html">Бош саҳифа</a></button>
+        <button><a href="cooking.html">Ширин таомлар</a></button>
+        <button><a href="med.html">Саломатлик</a></button>
+        <button><a href="#">Шеърият</a></button>
+        <button><a href="radio.html">Онлайн радио</a></button>
+        <button><a href="admin.html">Админ</a></button>
+    </nav>
+
+    <div class="container" id="main-feed">
+        <p>Хабарлар юкланмоқда...</p>
+    </div>
+
+    <script>
+        function displayPosts() {
+            // МУҲИМ: Бу ерда биз Админ панель сақлаган 'choyhona_posts' калитини қидирамиз
+            const posts = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
+            const feed = document.getElementById('main-feed');
+
+            if (posts.length === 0) {
+                feed.innerHTML = "<h3>Ҳозирча хабарлар йўқ.</h3>";
+                return;
+            }
+
+            feed.innerHTML = ""; // Тозалаш
+
+            // Хабарларни охирги қўшилганидан бошлаб чиқариш (Reverse)
+            posts.slice().reverse().forEach(post => {
+                const videoHTML = post.video ? `
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/${post.video}?modestbranding=1" allowfullscreen></iframe>
+                    </div>` : '';
+
+                const imageHTML = post.image ? `<img src="${post.image}">` : '';
+
+                feed.innerHTML += `
+                    <div class="post-card">
+                        <span class="post-date"><i class="far fa-calendar-alt"></i> ${post.date}</span>
+                        <h2>${post.title}</h2>
+                        ${imageHTML}
+                        ${videoHTML}
+                        <p>${post.content}</p>
+                    </div>
+                `;
+            });
+        }
+
+        // Саҳифа юкланганда функцияни ишга тушириш
+        window.onload = displayPosts;
+    </script>
+</body>
+</html>
