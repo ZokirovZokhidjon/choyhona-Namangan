@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
@@ -72,9 +72,9 @@
     <div class="sidebar">
         <h2>АДМИН</h2>
         <ul class="sidebar-menu">
-            <li class="active" onclick="tab('stats')"><i class="fas fa-chart-line"></i> Статистика</li>
-            <li onclick="tab('add')"><i class="fas fa-plus-circle"></i> Қўшиш</li>
-            <li onclick="tab('manage')"><i class="fas fa-tasks"></i> Бошқариш</li>
+            <li id="tab-stats" class="active" onclick="tab('stats')"><i class="fas fa-chart-line"></i> Статистика</li>
+            <li id="tab-add" onclick="tab('add')"><i class="fas fa-plus-circle"></i> Қўшиш</li>
+            <li id="tab-manage" onclick="tab('manage')"><i class="fas fa-tasks"></i> Бошқариш</li>
             <li onclick="logout()"><i class="fas fa-power-off"></i> Чиқиш</li>
         </ul>
     </div>
@@ -102,8 +102,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>YouTube Video ID (Агар бўлса)</label>
-                    <input type="text" id="p-video" placeholder="dQw4w9WgXcQ">
+                    <label>YouTube Video (Линк ёки фақат код)</label>
+                    <input type="text" id="p-video" placeholder="https://www.youtube.com/watch?v=...">
                 </div>
                 <div class="form-group">
                     <label>Расм линки (URL)</label>
@@ -134,7 +134,7 @@
 </div>
 
 <script>
-    const _HASH = "NzUyOA=="; 
+    const _HASH = "NzUyOA=="; // Пароль: 7528
 
     function checkAuth() {
         const u = document.getElementById('user_in').value;
@@ -143,7 +143,7 @@
             sessionStorage.setItem('adminStatus', 'authorized');
             openAdmin();
         } else {
-            document.getElementById('error').innerText = "Хато маълумот!";
+            document.getElementById('error').innerText = "Логин ёки пароль хато!";
         }
     }
 
@@ -155,29 +155,65 @@
 
     function tab(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active-section'));
+        document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+        
         document.getElementById(id).classList.add('active-section');
+        document.getElementById('tab-' + id).classList.add('active');
+        
         if(id === 'manage') loadTable();
+        if(id === 'stats') updateStats();
     }
 
     function save() {
-        const title = document.getElementById('p-title').value;
-        const text = document.getElementById('p-text').value;
+        const title = document.getElementById('p-title').value.trim();
+        const text = document.getElementById('p-text').value.trim();
         const cat = document.getElementById('p-cat').value;
-        const video = document.getElementById('p-video').value;
-        const image = document.getElementById('p-img').value;
         const editId = document.getElementById('edit-id').value;
+        let videoInput = document.getElementById('p-video').value.trim();
+        let imgInput = document.getElementById('p-img').value.trim();
 
-        if(!title || !text) return alert("Маълумотни тўлдиринг!");
+        if(!title || !text) { alert("Маълумотларни тўлдиринг!"); return; }
+
+        // YouTube ID ажратиб олиш
+        if (videoInput.includes("v=")) {
+            videoInput = videoInput.split("v=")[1].split("&")[0];
+        } else if (videoInput.includes("youtu.be/")) {
+            videoInput = videoInput.split("youtu.be/")[1].split("?")[0];
+        }
 
         let posts = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
-        const postData = { title, content: text, category: cat, video, image, date: new Date().toLocaleString() };
 
-        if(editId === "-1") posts.push(postData);
-        else posts[editId] = postData;
+        const postData = { 
+            title: title, 
+            content: text, 
+            category: cat, 
+            video: videoInput, 
+            image: imgInput,
+            date: new Date().toLocaleString(),
+            views: editId === "-1" ? 0 : (posts[editId].views || 0)
+        };
+
+        if(editId === "-1") {
+            posts.push(postData);
+        } else {
+            posts[editId] = postData;
+        }
 
         localStorage.setItem('choyhona_posts', JSON.stringify(posts));
-        alert("Сақланди!");
-        location.reload();
+        alert("Муваффақиятли сақланди!");
+        
+        // Формани тозалаш ва рўйхатга ўтиш (Reload қилмасдан)
+        resetForm();
+        tab('manage');
+    }
+
+    function resetForm() {
+        document.getElementById('p-title').value = "";
+        document.getElementById('p-text').value = "";
+        document.getElementById('p-video').value = "";
+        document.getElementById('p-img').value = "";
+        document.getElementById('edit-id').value = "-1";
+        document.getElementById('f-title').innerText = "Янги мақола";
     }
 
     function loadTable() {
@@ -186,7 +222,7 @@
         body.innerHTML = "";
         posts.forEach((p, i) => {
             body.innerHTML += `<tr>
-                <td>${p.title}</td>
+                <td>${p.title.substring(0, 40)}...</td>
                 <td>${p.category}</td>
                 <td>
                     <button class="action-btn" style="background:var(--success)" onclick="edit(${i})">✏️</button>
@@ -205,6 +241,7 @@
         document.getElementById('p-video').value = p.video || "";
         document.getElementById('p-img').value = p.image || "";
         document.getElementById('edit-id').value = i;
+        document.getElementById('f-title').innerText = "Таҳрирлаш";
         tab('add');
     }
 
@@ -220,15 +257,32 @@
 
     function updateStats() {
         const posts = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
+        const totalViews = posts.reduce((sum, p) => sum + (Number(p.views) || 0), 0);
+        
         document.getElementById('stat-view').innerHTML = `
-            <div class="stat-card"><h3>Жами</h3><h2>${posts.length}</h2></div>
-            <div class="stat-card"><h3>Янгиликлар</h3><h2>${posts.filter(p=>p.category==='news').length}</h2></div>
-            <div class="stat-card"><h3>Мумтоз</h3><h2>${posts.filter(p=>p.category==='classic').length}</h2></div>
+            <div class="stat-card" style="border-bottom-color: #3498db;">
+                <h3>Жами кўрилди (Просмотр)</h3>
+                <h2>${totalViews}</h2>
+            </div>
+            <div class="stat-card">
+                <h3>Жами мақолалар</h3>
+                <h2>${posts.length}</h2>
+            </div>
+            <div class="stat-card" style="border-bottom-color: #27ae60;">
+                <h3>Саломатлик</h3>
+                <h2>${posts.filter(p=>p.category==='health').length}</h2>
+            </div>
         `;
     }
 
-    function logout() { sessionStorage.clear(); location.reload(); }
-    window.onload = () => { if(sessionStorage.getItem('adminStatus') === 'authorized') openAdmin(); }
+    function logout() { 
+        sessionStorage.clear(); 
+        location.reload(); 
+    }
+
+    window.onload = () => { 
+        if(sessionStorage.getItem('adminStatus') === 'authorized') openAdmin(); 
+    }
 </script>
 </body>
 </html>

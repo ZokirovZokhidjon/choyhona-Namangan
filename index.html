@@ -58,7 +58,7 @@
         <a href="index.html" class="nav-btn active">Асосий саҳифа</a>
         <a href="poetry.html" class="nav-btn">Шеърият</a>
         <a href="classic.html" class="nav-btn">Мумтоз наволар</a>
-        <a href="cooking.html" class="nav-btn">Ширин таомлар</a>
+        <a href="cockes.html" class="nav-btn">Ширин таомлар</a>
         <a href="health.html" class="nav-btn">Саломатлик</a>
         <a href="radio.html" class="nav-btn">Онлайн Радио</a>
         <a href="admin.html" class="nav-btn"><i class="fas fa-lock"></i></a>
@@ -92,50 +92,80 @@
             return;
         }
 
-        const newsOnly = db.filter(p => p.category === 'news');
-        const reversed = newsOnly.slice().reverse();
+        // ТУЗАТИШ: Энди 'news' ва 'cooking' (Ширин таомлар) бирга чиқади
+        const mainPosts = db.filter(p => p.category === 'news' || p.category === 'cooking');
+        const reversed = mainPosts.slice().reverse();
 
         if (reversed.length === 0) {
-            feed.innerHTML = "<h3>Асосий янгиликлар ҳозирча йўқ.</h3>";
+            feed.innerHTML = "<h3>Ҳозирча янгиликлар йўқ.</h3>";
         } else {
             feed.innerHTML = "";
             reversed.forEach((post) => {
-                let imgSrc = post.image ? post.image : 'https://via.placeholder.com/600x300?text=Choyhona+News';
+                let mediaHtml = "";
+                
+                // Агар видео бўлса видеони, бўлмаса расмни чиқарамиз
+                if (post.video) {
+                    mediaHtml = `
+                        <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden;">
+                            <iframe src="https://www.youtube.com/embed/${post.video}" 
+                                    style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" 
+                                    allowfullscreen></iframe>
+                        </div>`;
+                } else {
+                    let imgSrc = post.image ? post.image : 'https://via.placeholder.com/600x300?text=Choyhona+News';
+                    mediaHtml = `<img src="${imgSrc}" style="width:100%; height:250px; object-fit:cover;">`;
+                }
+
                 feed.innerHTML += `
                     <div class="post-card">
-                        <img src="${imgSrc}" style="width:100%; height:250px; object-fit:cover;">
+                        ${mediaHtml}
                         <div class="post-content">
-                            <span class="post-cat">Янгиликлар</span>
+                            <span class="post-cat">${post.category === 'news' ? 'Янгиликлар' : 'Ширин таомлар'}</span>
                             <h2 class="post-title">${post.title}</h2>
-                            <p class="post-preview">${post.content}</p>
+                            <p class="post-preview">${post.content.substring(0, 150)}...</p>
                             <span class="btn-read" onclick="readFull(${db.indexOf(post)})">Давомини ўқиш →</span>
                         </div>
                     </div>`;
             });
         }
 
+        // Ён томондаги кичик меню (охирги 5 та хабар)
         side.innerHTML = "";
         reversed.slice(0, 5).forEach((post) => {
             side.innerHTML += `
                 <div class="side-post" onclick="readFull(${db.indexOf(post)})">
                     <b>${post.title}</b>
-                    <small style="color:#aaa; font-size:10px;">${post.date}</small>
+                    <small style="color:#aaa; font-size:10px; display:block;">${post.date}</small>
                 </div>`;
         });
+
+        // Сайтга умумий ташрифни ҳисоблаш
+        let total = localStorage.getItem('site_total_views') || 0;
+        localStorage.setItem('site_total_views', parseInt(total) + 1);
     }
 
     function readFull(index) {
         const p = db[index];
         const modal = document.getElementById('postModal');
         const content = document.getElementById('modal-content');
-        let v = p.video ? `<div class="video-box"><iframe src="https://www.youtube.com/embed/${p.video}" allowfullscreen></iframe></div>` : "";
+        
+        // Кўришлар сонини ошириш (Статистика учун)
+        p.views = (p.views || 0) + 1;
+        db[index] = p;
+        localStorage.setItem('choyhona_posts', JSON.stringify(db));
+
+        let media = p.video ? 
+            `<div class="video-box"><iframe src="https://www.youtube.com/embed/${p.video}" allowfullscreen></iframe></div>` : 
+            (p.image ? `<img src="${p.image}" style="width:100%; border-radius:10px; margin-bottom:15px;">` : "");
 
         content.innerHTML = `
             <span class="post-cat">${p.category}</span>
             <h1 style="color:var(--dark); margin:15px 0;">${p.title}</h1>
+            ${media}
             <p class="full-text">${p.content}</p>
-            ${v}
-            <p style="margin-top:20px; font-size:12px; color:#999;">Сана: ${p.date}</p>
+            <p style="margin-top:20px; font-size:12px; color:#999;">
+                Сана: ${p.date} | <i class="fas fa-eye"></i> Кўрилди: ${p.views}
+            </p>
         `;
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
@@ -149,6 +179,5 @@
     window.onclick = (e) => { if(e.target.id == 'postModal') closeMe(); }
     window.onload = initBlog;
 </script>
-
 </body>
 </html>
