@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ширин таомлар - Чойхона Кулинарияси</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --cooking-color: #e67e22; --dark: #2c3e50; }
+        body { 
+            background: #fdf2e9; margin: 0; padding: 0; 
+            font-family: 'Segoe UI', sans-serif; text-align: center; 
+        }
+        
+        header { 
+            background: var(--cooking-color); color: white; padding: 40px 20px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative;
+        }
+        
+        .back-btn { 
+            position: absolute; top: 20px; left: 20px; color: white; 
+            text-decoration: none; font-weight: bold; border: 2px solid white; 
+            padding: 8px 15px; border-radius: 20px; transition: 0.3s; font-size: 14px;
+        }
+        .back-btn:hover { background: white; color: var(--cooking-color); }
+
+        .container { max-width: 900px; margin: 30px auto; padding: 0 15px; }
+
+        /* Рецепт карточкаси */
+        .recipe-card { 
+            background: white; border-radius: 20px; overflow: hidden; 
+            margin-bottom: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); 
+            text-align: left; transition: 0.3s;
+        }
+        .recipe-card:hover { transform: translateY(-5px); }
+        .recipe-body { padding: 25px; }
+        .recipe-badge { 
+            background: var(--cooking-color); color: white; 
+            padding: 5px 15px; border-radius: 15px; font-size: 12px; font-weight: bold; 
+        }
+        .recipe-title { margin: 15px 0; color: var(--dark); font-size: 26px; }
+        .recipe-text { color: #555; line-height: 1.8; font-size: 17px; white-space: pre-line; }
+        
+        /* Видео учун махсус услуб */
+        .video-box { 
+            margin-top: 20px; border-radius: 15px; overflow: hidden; 
+            background: #000; position: relative; padding-bottom: 56.25%; height: 0; 
+        }
+        .video-box iframe { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; 
+        }
+        
+        .empty-msg { padding: 50px; background: white; border-radius: 20px; color: #777; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Асосий саҳифа</a>
+    <i class="fas fa-utensils fa-3x"></i>
+    <h1>ПАҲ-ПАҲ, ШИРИН ТАОМЛАР!</h1>
+    <p>Энг сара рецептлар ва кулинария сирлари</p>
+</header>
+
+<div class="container" id="cooking-feed">
+    <div class="empty-msg">
+        <i class="fas fa-spinner fa-spin fa-2x"></i>
+        <p>Юкланмоқда...</p>
+    </div>
+</div>
+
+<script>
+    function loadCookingPosts() {
+        // 1. Маълумотларни базадан (localStorage) оламиз
+        const posts = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
+        const feed = document.getElementById('cooking-feed');
+        
+        // 2. Фақат 'cooking' (Ширин таомлар) бўлимига тегишлиларини ажратамиз
+        const cookingPosts = posts.filter(p => p.category === 'cooking');
+
+        if (cookingPosts.length === 0) {
+            feed.innerHTML = `
+                <div class="empty-msg">
+                    <i class="fas fa-cookie-bite fa-4x" style="color: #ddd; margin-bottom: 20px;"></i>
+                    <h3>Ҳозирча рецептлар йўқ.</h3>
+                    <p>Админ панелдан "Ширин таомлар" бўлимига мақола қўшинг.</p>
+                </div>`;
+            return;
+        }
+
+        // 3. Мақолаларни экранга чиқарамиз (янгилари тепада туради)
+        feed.innerHTML = "";
+        cookingPosts.reverse().forEach(post => {
+            
+            // Видео бор-йўқлигини текширамиз
+            let videoHTML = "";
+            if (post.video && post.video.trim() !== "") {
+                videoHTML = `
+                    <div class="video-box">
+                        <iframe src="https://www.youtube.com/embed/${post.video}" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                        </iframe>
+                    </div>`;
+            }
+
+            feed.innerHTML += `
+                <div class="recipe-card">
+                    <div class="recipe-body">
+                        <span class="recipe-badge"><i class="fas fa-fire"></i> РЕЦЕПТ</span>
+                        <h2 class="recipe-title">${post.title}</h2>
+                        <div class="recipe-text">${post.content}</div>
+                        ${videoHTML}
+                        <hr style="margin-top:20px; border: 0; border-top: 1px solid #eee;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <small style="color: #999;"><i class="far fa-clock"></i> ${post.date}</small>
+                            <i class="fas fa-share-alt" style="color: var(--cooking-color); cursor:pointer;"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // Саҳифа юкланиши билан функцияни ишга туширамиз
+    window.onload = loadCookingPosts;
+</script>
+
+</body>
+</html>
