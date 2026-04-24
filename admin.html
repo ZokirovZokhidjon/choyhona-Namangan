@@ -3,229 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Чойхона - Cosmic Admin PRO</title>
+    <title>Чойхона - Mobile Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { 
-            --neon-orange: #ff6a00; 
-            --neon-blue: #00d4ff; 
-            --neon-green: #39ff14;
-            --dark-space: #0f172a;
-            --glass: rgba(255, 255, 255, 0.07);
-        }
+        :root { --blue: #00d4ff; --orange: #ff6a00; --bg: #0f172a; --card: #1e293b; }
+        
         body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background: radial-gradient(circle at top right, #1e293b, #0f172a, #000); 
-            color: white; margin: 0; padding: 10px; min-height: 100vh; overflow-x: hidden;
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background: var(--bg); color: white; margin: 0; padding: 0;
         }
 
-        /* --- ЛОГИН ОЙНАСИ --- */
-        #login-overlay { 
-            position: fixed; inset: 0; background: var(--dark-space); 
-            display: flex; justify-content: center; align-items: center; z-index: 10000; 
-        }
-        .login-box { 
-            background: var(--glass); backdrop-filter: blur(20px); border: 2px solid var(--neon-blue);
-            padding: 30px; border-radius: 30px; text-align: center; width: 320px; 
-            box-shadow: 0 0 50px rgba(0, 212, 255, 0.2);
-            animation: float 3s ease-in-out infinite;
-        }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        
-        .login-box input { 
-            width: 100%; margin: 10px 0; padding: 12px; border-radius: 15px; 
-            background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; outline: none; box-sizing: border-box;
-        }
-        .login-box button { 
-            background: linear-gradient(45deg, var(--neon-orange), #ee0979); 
-            color: white; border: none; width: 100%; padding: 12px; border-radius: 15px; cursor: pointer; font-weight: bold;
+        /* Шапка */
+        header {
+            background: rgba(15, 23, 42, 0.9);
+            padding: 15px 20px; border-bottom: 2px solid var(--blue);
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px);
         }
 
-        /* --- АДМИН ПАНЕЛ --- */
-        #admin-wrapper { display: none; max-width: 1200px; margin: 0 auto; animation: fadeIn 1s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .container { padding: 15px; max-width: 1000px; margin: 0 auto; }
 
-        .main-panel { display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; }
-        
-        .glass-box { 
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
-            padding: 20px; border-radius: 25px; backdrop-filter: blur(15px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        /* Форма блоки */
+        .glass-card {
+            background: var(--card); border-radius: 20px; padding: 20px;
+            border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
 
-        h2 { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); font-size: 18px; margin-bottom: 20px; }
-        label { font-size: 12px; color: #888; margin-left: 5px; }
+        h2 { font-size: 18px; color: var(--blue); margin-top: 0; display: flex; align-items: center; gap: 10px; }
 
-        input, textarea, select { 
-            width: 100%; padding: 12px; margin-top: 5px; margin-bottom: 12px;
-            background: rgba(0,0,0,0.6); border: 1px solid #334155; border-radius: 12px; color: white; box-sizing: border-box; font-size: 16px;
+        label { display: block; font-size: 12px; color: #94a3b8; margin: 10px 0 5px 5px; }
+
+        input, select, textarea {
+            width: 100%; padding: 14px; border-radius: 12px;
+            background: #0f172a; border: 1px solid #334155; color: white;
+            font-size: 16px; box-sizing: border-box; outline: none; transition: 0.3s;
         }
 
-        .btn-neon { 
-            background: linear-gradient(45deg, #00d4ff, #0055ff); border: none; 
-            padding: 15px; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; width: 100%;
-            text-transform: uppercase; letter-spacing: 1px;
+        input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 10px rgba(0, 212, 255, 0.2); }
+
+        .btn-submit {
+            width: 100%; padding: 16px; background: linear-gradient(45deg, var(--blue), #0055ff);
+            border: none; border-radius: 12px; color: white; font-weight: bold;
+            font-size: 16px; margin-top: 20px; cursor: pointer; text-transform: uppercase;
         }
 
-        .post-item { 
-            background: rgba(15, 23, 42, 0.6); padding: 15px; border-radius: 18px; margin-bottom: 12px;
-            display: flex; justify-content: space-between; align-items: center; border: 1px solid #1e293b;
+        /* Рўйхат (Мобил учун қулай) */
+        .post-list-item {
+            background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px;
+            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid rgba(255,255,255,0.05);
         }
-        .post-info b { color: var(--neon-orange); font-size: 15px; }
 
-        @media (max-width: 900px) {
-            .main-panel { grid-template-columns: 1fr; }
+        .post-info b { font-size: 14px; display: block; color: var(--text); }
+        .post-info span { font-size: 11px; color: var(--orange); text-transform: uppercase; }
+
+        .btn-delete {
+            background: rgba(231, 76, 60, 0.1); color: #e74c3c; border: 1px solid #e74c3c;
+            padding: 10px; border-radius: 10px; cursor: pointer;
+        }
+
+        /* Логин ойнаси - Мобил учун */
+        #login-screen {
+            position: fixed; inset: 0; background: var(--bg);
+            display: flex; justify-content: center; align-items: center; z-index: 2000;
+            padding: 20px;
+        }
+        .login-box {
+            width: 100%; max-width: 350px; text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            header h3 { font-size: 16px; }
+            .btn-submit { padding: 18px; } /* Бармоқ тегиши осон бўлиши учун */
         }
     </style>
 </head>
 <body>
 
-<div id="login-overlay">
+<div id="login-screen">
     <div class="login-box">
-        <div style="font-size: 50px; margin-bottom: 10px;">🚀</div>
-        <h2 style="letter-spacing: 2px;">COMMAND CENTER</h2>
-        <input type="text" id="u_name" placeholder="Логин">
-        <input type="password" id="u_pass" placeholder="Пароль">
-        <button onclick="checkAuth()">Authentication</button>
-        <a href="index.html" style="color: #666; text-decoration: none; display: block; margin-top: 15px; font-size: 12px;">← Return to Earth</a>
+        <i class="fas fa-rocket fa-3x" style="color: var(--orange); margin-bottom: 20px;"></i>
+        <h2>COMMAND CENTER</h2>
+        <input type="text" id="u" placeholder="Логин" style="margin-bottom: 10px;">
+        <input type="password" id="p" placeholder="Пароль">
+        <button class="btn-submit" onclick="auth()">КИРИШ</button>
     </div>
 </div>
 
-<div id="admin-wrapper">
-    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 10px;">
-        <h3><i class="fas fa-rocket"></i> ROCKET PANEL</h3>
-        <button onclick="logout()" style="background:none; border:1px solid #e74c3c; color:#e74c3c; padding:8px 15px; border-radius:12px; font-weight:bold;">EXIT</button>
-    </div>
+<div id="admin-content" style="display: none;">
+    <header>
+        <h3 style="margin:0;"><i class="fas fa-handshake"></i> ЧОЙХОНА АДМИН</h3>
+        <button onclick="logout()" style="background:none; border:none; color:#e74c3c;"><i class="fas fa-sign-out-alt fa-lg"></i></button>
+    </header>
 
-    <div class="main-panel">
-        <div class="glass-box">
-            <h2><i class="fas fa-plus-circle"></i> ЯНГИ КОНТЕНТ</h2>
+    <div class="container">
+        <div class="glass-card">
+            <h2><i class="fas fa-pen-nib"></i> Янги хабар юбориш</h2>
             
             <label>Сарлавҳа</label>
-            <input type="text" id="p-title" placeholder="Мавзу номи...">
+            <input type="text" id="title" placeholder="Мавзу...">
 
-            <label>Саҳифани танланг</label>
-            <select id="p-cat">
-                <optgroup label="Асосий">
-                    <option value="main">🏠 Асосий саҳифа</option>
-                    <option value="news">📰 Янгиликлар</option>
-                </optgroup>
-                <optgroup label="Кулинария">
-                    <option value="cooking">🍲 Ширин таомлар</option>
-                    <option value="national">🇺🇿 Миллий таомлар</option>
-                    <option value="dessert">🍰 Пишириқлар</option>
-                </optgroup>
-                <optgroup label="Кинотеатр (Жанрлар)">
-                    <option value="action">🔥 Боевик</option>
-                    <option value="thriller">🔪 Триллер</option>
-                    <option value="detective">🕵️ Детектив</option>
-                    <option value="retro-ссср">📺 Ретро СССР</option>
-                    <option value="comedy">😂 Комедия</option>
-                    <option value="horror">👻 Қўрқинчли</option>
-                    <option value="drama">🎭 Драма</option>
-                </optgroup>
-                <optgroup label="Бўлимлар">
-                    <option value="poetry">✍️ Шеърият</option>
-                    <option value="health">🩺 Саломатлик</option>
-                    <option value="fishing">🎣 Балиқ ови</option>
-                </optgroup>
+            <label>Қайси саҳифага юборамиз?</label>
+            <select id="cat">
+                <option value="main">🏠 Асосий саҳифа</option>
+                <option value="news">📰 Янгиликлар</option>
+                <option value="cooking">🍲 Ширин таомлар</option>
+                <option value="action">🔥 Кино: Боевик</option>
+                <option value="detective">🕵️ Кино: Детектив</option>
+                <option value="poetry">✍️ Шеърият</option>
+                <option value="fishing">🎣 Балиқ ови</option>
+                <option value="health">🩺 Саломатлик</option>
             </select>
 
-            <label>YouTube ID</label>
-            <input type="text" id="p-video" placeholder="ID: dQw4w9WgXcQ">
+            <label>YouTube ID (Агар видео бўлса)</label>
+            <input type="text" id="vid" placeholder="Масалан: dQw4w9WgXcQ">
 
-            <label>Расм линки</label>
-            <input type="text" id="p-img" placeholder="https://i.ibb.co/...">
+            <label>Расм линки (ImgBB ёки бошқа)</label>
+            <input type="text" id="img" placeholder="https://...">
 
-            <label>Матн / Мазмуни</label>
-            <textarea id="p-text" rows="6" placeholder="Мақола ёки шеър матни..."></textarea>
+            <label>Хабар матни</label>
+            <textarea id="text" rows="5" placeholder="Бу ерга ёзинг..."></textarea>
 
-            <button class="btn-neon" onclick="savePost()">ТИЗИМГА ЖОЙЛАШ</button>
+            <button class="btn-submit" onclick="send()">ТИЗИМГА ЖОЙЛАШ</button>
         </div>
 
-        <div class="glass-box">
-            <h2><i class="fas fa-database"></i> МАВЖУД МАЪЛУМОТЛАР</h2>
-            <div id="posts-list" style="max-height: 600px; overflow-y: auto; padding-right: 5px;"></div>
+        <div class="glass-card">
+            <h2><i class="fas fa-list"></i> Юборилганлар</h2>
+            <div id="list"></div>
         </div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
-
-    function checkAuth() {
-        const u = document.getElementById('u_name').value;
-        const p = document.getElementById('u_pass').value;
-        if(u === "admin" && p === "7528") {
-            sessionStorage.setItem('choyhona_admin', 'true');
-            loadAdmin();
-        } else { alert("ACCESS DENIED!"); }
+    function auth() {
+        const u = document.getElementById('u').value;
+        const p = document.getElementById('p').value;
+        if(u === 'admin' && p === '7528') {
+            sessionStorage.setItem('isLogged', 'true');
+            showAdmin();
+        } else { alert('Хато!'); }
     }
 
-    function loadAdmin() {
-        document.getElementById('login-overlay').style.display = 'none';
-        document.getElementById('admin-wrapper').style.display = 'block';
-        renderList();
+    function showAdmin() {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('admin-content').style.display = 'block';
+        loadList();
     }
 
-    function savePost() {
-        const title = document.getElementById('p-title').value;
-        const text = document.getElementById('p-text').value;
-        if(!title || !text) { alert("Маълумотни тўлдиринг!"); return; }
+    function send() {
+        const title = document.getElementById('title').value;
+        const text = document.getElementById('text').value;
+        if(!title || !text) return alert('Тўлдиринг!');
 
-        const post = {
+        const db = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
+        const newPost = {
             id: Date.now(),
             title: title,
             content: text,
-            category: document.getElementById('p-cat').value,
-            video: document.getElementById('p-video').value,
-            image: document.getElementById('p-img').value,
-            date: new Date().toLocaleString(),
-            views: 0
+            category: document.getElementById('cat').value,
+            video: document.getElementById('vid').value,
+            image: document.getElementById('img').value,
+            date: new Date().toLocaleString()
         };
 
-        db.push(post);
+        db.push(newPost);
         localStorage.setItem('choyhona_posts', JSON.stringify(db));
-        alert("Муваффақиятли сақланди!");
-        renderList();
-        
-        // Формани тозалаш
-        document.getElementById('p-title').value = "";
-        document.getElementById('p-text').value = "";
-        document.getElementById('p-video').value = "";
-        document.getElementById('p-img').value = "";
+        alert('Муваффақиятли юборилди!');
+        location.reload();
     }
 
-    function renderList() {
-        const list = document.getElementById('posts-list');
-        list.innerHTML = "";
-        db.reverse().forEach((p, i) => {
+    function loadList() {
+        const list = document.getElementById('list');
+        const db = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
+        list.innerHTML = db.length ? "" : "<p style='color:#666; text-align:center;'>Ҳеч нарса йўқ</p>";
+        
+        db.slice().reverse().forEach((item, index) => {
             list.innerHTML += `
-                <div class="post-item">
+                <div class="post-list-item">
                     <div class="post-info">
-                        <b>${p.title.substring(0, 30)}...</b><br>
-                        <small><i class="fas fa-tag"></i> ${p.category}</small>
+                        <b>${item.title.substring(0, 25)}...</b>
+                        <span><i class="fas fa-tag"></i> ${item.category}</span>
                     </div>
-                    <button onclick="deletePost(${i})" style="color:#e74c3c; background:none; border:1px solid #e74c3c; padding:5px 10px; border-radius:8px; cursor:pointer;"><i class="fa fa-trash"></i></button>
+                    <button class="btn-delete" onclick="del(${db.length - 1 - index})"><i class="fas fa-trash"></i></button>
                 </div>`;
         });
-        db.reverse(); // Аслини қайтариб қўямиз
     }
 
-    function deletePost(i) {
-        if(confirm("Ўчиришни тасдиқлайсизми?")) {
-            db.reverse(); // Рўйхат тескари бўлгани учун
+    function del(i) {
+        if(confirm('Ўчирамизми?')) {
+            const db = JSON.parse(localStorage.getItem('choyhona_posts'));
             db.splice(i, 1);
-            db.reverse();
             localStorage.setItem('choyhona_posts', JSON.stringify(db));
-            renderList();
+            loadList();
         }
     }
 
     function logout() { sessionStorage.clear(); location.reload(); }
 
-    window.onload = () => { 
-        if(sessionStorage.getItem('choyhona_admin')) loadAdmin(); 
+    window.onload = () => {
+        if(sessionStorage.getItem('isLogged')) showAdmin();
     }
 </script>
 </body>
