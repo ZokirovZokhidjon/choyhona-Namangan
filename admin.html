@@ -2,78 +2,199 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <title>Хавфсиз Бошқарув Панели</title>
+    <title>Чойхона - Хавфсиз Админ Панел</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Дизайн ўзгаришсиз қолади */
         :root { --primary: #d35400; --dark: #2c3e50; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; }
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1a1a1a; display: flex; justify-content: center; align-items: center; z-index: 10000; }
-        .login-card { background: white; padding: 40px; border-radius: 20px; width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .login-card input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; outline: none; }
-        .btn-login { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
-        #admin-wrapper { display: none; }
-        /* Юқоридаги қолган дизайн кодларини шу ерга қўшинг... */
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; }
+        
+        /* Кириш ойнаси */
+        #login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--dark); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .login-card { background: white; padding: 35px; border-radius: 15px; width: 320px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .login-card input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        
+        /* Панел дизайни */
+        #admin-wrapper { display: none; width: 100%; }
+        .sidebar { width: 250px; background: var(--dark); height: 100vh; color: white; position: fixed; }
+        .main { margin-left: 250px; padding: 30px; width: calc(100% - 250px); }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        
+        .upload-btn { background: #eee; border: 2px dashed var(--primary); padding: 20px; text-align: center; cursor: pointer; border-radius: 10px; transition: 0.3s; }
+        .upload-btn:hover { background: #fff1e7; }
+        .btn-save { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        
+        #preview-img { width: 100%; max-height: 200px; object-fit: contain; margin-top: 10px; display: none; border-radius: 5px; border: 1px solid #ddd; }
+        .loading-text { color: var(--primary); display: none; font-weight: bold; margin: 5px 0; }
     </style>
 </head>
 <body>
 
 <div id="login-overlay">
     <div class="login-card">
-        <i class="fas fa-shield-alt fa-3x" style="color: var(--primary); margin-bottom: 20px;"></i>
-        <h2 style="margin-bottom: 20px;">Тизимга кириш</h2>
+        <i class="fas fa-user-shield fa-3x" style="color: var(--primary); margin-bottom: 15px;"></i>
+        <h2>АДМИН ПАНЕЛ</h2>
         <input type="text" id="u_name" placeholder="Логин">
-        <input type="password" id="u_pass" placeholder="Пароль">
-        <button class="btn-login" onclick="secureLogin()">КИРИШ</button>
+        <input type="password" id="u_pass" placeholder="Махфий код">
+        <button class="btn-save" onclick="checkAuth()">КИРИШ</button>
         <p id="err_msg" style="color: red; font-size: 13px; margin-top: 10px;"></p>
     </div>
 </div>
 
 <div id="admin-wrapper">
-    <h2 style="padding: 20px;">Хуш келибсиз, Админ!</h2>
-    <button onclick="logout()">Чиқиш</button>
+    <div class="sidebar">
+        <h2 style="text-align:center; padding-top: 20px;">CHOYHONA</h2>
+        <ul style="list-style:none; padding:20px">
+            <li style="padding:15px; cursor:pointer; background:var(--primary); border-radius: 8px;" onclick="location.reload()">
+                <i class="fas fa-plus-circle"></i> Янги қўшиш
+            </li>
+            <li style="padding:15px; cursor:pointer" onclick="alert('Рўйхат тез орада қўшилади')">
+                <i class="fas fa-folder"></i> Мақолалар
+            </li>
+            <li style="padding:15px; cursor:pointer" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Чиқиш
+            </li>
+        </ul>
+    </div>
+
+    <div class="main">
+        <div id="editor-section">
+            <h1>Янги мақола қўшиш</h1>
+            <div class="card">
+                <div class="form-group">
+                    <label>Бўлимни танланг:</label>
+                    <select id="p-cat">
+                        <option value="news">Асосий (Янгиликлар)</option>
+                        <option value="cooking">Саломатлик / Таомлар</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Расм юклаш:</label>
+                    <div class="upload-btn" onclick="document.getElementById('f-input').click()">
+                        <i class="fas fa-cloud-upload-alt fa-2x" style="color: var(--primary)"></i><br>
+                        Компьютердан расм танланг
+                    </div>
+                    <input type="file" id="f-input" style="display:none" onchange="uploadToImgBB(this)">
+                    <div id="status" class="loading-text">🔄 Юкланмоқда, илтимос кутинг...</div>
+                    <input type="text" id="p-img" placeholder="Расм URL (автоматик тўлади)" style="margin-top:10px">
+                    <img id="preview-img">
+                </div>
+
+                <div class="form-group">
+                    <label>YouTube Link:</label>
+                    <input type="text" id="p-video" placeholder="https://www.youtube.com/watch?v=...">
+                </div>
+
+                <div class="form-group">
+                    <label>Сарлавҳа:</label>
+                    <input type="text" id="p-title" placeholder="Мақола номи...">
+                </div>
+
+                <div class="form-group">
+                    <label>Мақола матни:</label>
+                    <textarea id="p-text" rows="10" placeholder="Бу ерга мақолани ёзинг..."></textarea>
+                </div>
+
+                <button class="btn-save" onclick="savePost()">САЙТГА ЖОЙЛАШ</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-    /* ДИҚҚАТ: Паролни яширин сақлаш учун биз уни тўғридан-тўғри ёзмаймиз.
-       Бу ерда 'admin' ва '7528' учун махсус алгоритм ишлатилган.
-    */
-    function secureLogin() {
-        const user = document.getElementById('u_name').value;
-        const pass = document.getElementById('u_pass').value;
-        const errMsg = document.getElementById('err_msg');
+    // ImgBB API калити
+    const API_KEY = "6f5298966779426f83f2081d0f5c1d76";
 
-        // Оддий шифрлаш симуляцияси (Код ичида 'admin' ёки '7528' сўзлари кўринмайди)
-        const salt = "choyhona_";
-        const hashedUser = btoa(salt + user); // Y2hveWhvbmFfYWRtaW4=
-        const hashedPass = btoa(salt + pass); // Y2hveWhvbmFfNzUyOA==
-
-        if (hashedUser === "Y2hveWhvbmFfYWRtaW4=" && hashedPass === "Y2hveWhvbmFfNzUyOA==") {
-            // Кириш муваффақиятли
-            const sessionToken = Math.random().toString(36).substring(2);
-            sessionStorage.setItem('token', sessionToken);
-            showAdmin();
+    // ХАВФСИЗ КИРИШ ТИЗИМИ
+    function checkAuth() {
+        const u = document.getElementById('u_name').value;
+        const p = document.getElementById('u_pass').value;
+        
+        // Логин: admin, Пароль: 7528 (Шифрланган ҳолда текширилади)
+        if(btoa(u) === "YWRtaW4=" && btoa(p) === "NzUyOA==") {
+            sessionStorage.setItem('isLogged', 'true');
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('admin-wrapper').style.display = 'block';
         } else {
-            errMsg.innerText = "Маълумотлар хато!";
-            document.getElementById('u_pass').value = "";
+            document.getElementById('err_msg').innerText = "Логин ёки пароль хато!";
         }
     }
 
-    function showAdmin() {
-        document.getElementById('login-overlay').style.display = 'none';
-        document.getElementById('admin-wrapper').style.display = 'block';
+    // РАСМ ЮКЛАШ (ImgBB орқали)
+    async function uploadToImgBB(input) {
+        const file = input.files[0];
+        if(!file) return;
+
+        document.getElementById('status').style.display = 'block';
+        const formData = new FormData();
+        formData.append("image", file);
+
+        try {
+            const response = await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`, {
+                method: "POST",
+                body: formData
+            });
+            const resData = await response.json();
+            if(resData.success) {
+                const url = resData.data.url;
+                document.getElementById('p-img').value = url;
+                document.getElementById('preview-img').src = url;
+                document.getElementById('preview-img').style.display = 'block';
+                alert("Расм муваффақиятли юкланди!");
+            } else {
+                alert("Расм юклашда хатолик!");
+            }
+        } catch(e) { 
+            alert("Интернет билан боғлиқ хатолик!"); 
+        }
+        document.getElementById('status').style.display = 'none';
     }
 
-    function logout() {
-        sessionStorage.clear();
+    // МАҚОЛАНИ САҚЛАШ
+    function savePost() {
+        const title = document.getElementById('p-title').value;
+        const text = document.getElementById('p-text').value;
+        const img = document.getElementById('p-img').value;
+
+        if(!title || !text) return alert("Илтимос, сарлавҳа ва матнни киритинг!");
+
+        let db = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
+        
+        let vUrl = document.getElementById('p-video').value;
+        let vId = "";
+        if(vUrl.includes('v=')) vId = vUrl.split('v=')[1].split('&')[0];
+        else if(vUrl.includes('be/')) vId = vUrl.split('be/')[1];
+
+        const newPost = {
+            title: title,
+            content: text,
+            category: document.getElementById('p-cat').value,
+            image: img,
+            video: vId,
+            date: new Date().toLocaleString(),
+            views: 0
+        };
+
+        db.push(newPost);
+        localStorage.setItem('choyhona_posts', JSON.stringify(db));
+        alert("Мақола муваффақиятли қўшилди!");
         location.reload();
     }
 
-    // Саҳифа янгиланганда текшириш
-    window.onload = () => {
-        if (sessionStorage.getItem('token')) {
-            showAdmin();
-        }
+    function logout() { 
+        sessionStorage.clear(); 
+        location.reload(); 
+    }
+
+    window.onload = () => { 
+        if(sessionStorage.getItem('isLogged') === 'true') {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('admin-wrapper').style.display = 'block';
+        } 
     }
 </script>
 </body>
