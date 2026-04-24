@@ -2,89 +2,105 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Чойхона - Кинотеатр</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #d35400; --dark: #0f172a; --glass: rgba(255,255,255,0.1); }
-        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; margin: 0; padding: 0; }
+        :root { --primary: #ff6a00; --dark: #0f172a; --glass: rgba(255,255,255,0.1); }
         
-        header { background: rgba(0,0,0,0.9); padding: 15px; text-align: center; border-bottom: 2px solid var(--primary); sticky; top: 0; z-index: 100; }
-        .nav-link { color: white; text-decoration: none; margin: 0 10px; font-weight: bold; font-size: 14px; }
+        body { 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            background: #0f172a; color: white; margin: 0; padding: 0; 
+            overflow-x: hidden;
+        }
+        
+        header { 
+            background: rgba(0,0,0,0.9); padding: 15px; text-align: center; 
+            border-bottom: 2px solid var(--primary); position: sticky; top: 0; z-index: 1000; 
+        }
+        
+        .nav-link { color: white; text-decoration: none; margin: 0 10px; font-weight: bold; font-size: 14px; text-transform: uppercase; }
         .nav-link:hover { color: var(--primary); }
 
-        /* Жанрлар менюси - мобилда айланиши учун */
+        /* Жанрлар менюси - Мобилда суриладиган */
         .genre-nav { 
             display: flex; overflow-x: auto; white-space: nowrap; gap: 10px; 
             padding: 15px; background: rgba(255,255,255,0.05);
-            scrollbar-width: none; /* Firefox учун */
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; 
         }
-        .genre-nav::-webkit-scrollbar { display: none; /* Chrome/Safari учун */ }
+        .genre-nav::-webkit-scrollbar { display: none; }
         
         .genre-btn { 
-            background: var(--glass); border: 1px solid var(--primary); color: white; 
-            padding: 8px 15px; border-radius: 20px; cursor: pointer; flex-shrink: 0;
-            font-size: 13px;
+            background: var(--glass); border: 1px solid rgba(255,255,255,0.2); color: white; 
+            padding: 10px 20px; border-radius: 25px; cursor: pointer; flex-shrink: 0;
+            font-size: 14px; transition: 0.3s;
         }
-        .genre-btn.active { background: var(--primary); box-shadow: 0 0 10px var(--primary); }
+        .genre-btn.active { background: var(--primary); border-color: var(--primary); box-shadow: 0 0 15px rgba(255,106,0,0.4); }
 
-        /* Видео сеткаси - Мобил учун мослашган */
+        /* Видео сеткаси */
         .video-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 20px; padding: 20px; max-width: 1300px; margin: 0 auto; 
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 20px; padding: 20px; max-width: 1400px; margin: 0 auto; 
         }
 
         .movie-card { 
-            background: #1e293b; border-radius: 12px; overflow: hidden; 
-            border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column;
+            background: #1e293b; border-radius: 15px; overflow: hidden; 
+            border: 1px solid rgba(255,255,255,0.05); transition: transform 0.3s;
+            display: flex; flex-direction: column;
         }
+        .movie-card:hover { transform: translateY(-5px); }
         
-        /* Видео контейнери */
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .media-holder { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
+        .media-holder iframe, .media-holder img { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; object-fit: cover;
+        }
 
-        .movie-info { padding: 12px; }
-        .movie-title { font-size: 16px; font-weight: bold; margin: 5px 0; color: #fff; line-height: 1.4; }
-        .genre-tag { color: var(--primary); font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .movie-meta { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-top: 10px; }
+        .movie-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .movie-title { font-size: 17px; font-weight: bold; margin: 8px 0; color: #fff; line-height: 1.4; }
+        .genre-tag { 
+            color: var(--primary); font-size: 12px; font-weight: bold; 
+            text-transform: uppercase; background: rgba(255,106,0,0.1); 
+            padding: 2px 8px; border-radius: 5px; width: fit-content;
+        }
+        .movie-meta { display: flex; justify-content: space-between; font-size: 12px; color: #64748b; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
 
-        #no-movies { text-align: center; padding: 100px 20px; display: none; }
+        #no-movies { text-align: center; padding: 100px 20px; color: #64748b; }
 
-        /* ТЕЛЕФОНЛАР УЧУН МАХСУС ТУЗАТИШЛАР */
-        @media (max-width: 480px) {
-            .video-grid { grid-template-columns: 1fr; padding: 10px; }
-            header { padding: 10px; }
-            .nav-link { margin: 0 5px; font-size: 12px; }
-            .movie-title { font-size: 15px; }
+        /* Мобил мослашув */
+        @media (max-width: 600px) {
+            .video-grid { grid-template-columns: 1fr; padding: 15px; }
+            .movie-title { font-size: 16px; }
+            header { padding: 12px; }
         }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-size: 20px; font-weight: bold; color: var(--primary); margin-bottom: 10px;">
-        <i class="fas fa-film"></i> ЧОЙХОНА КИНО
+    <div style="font-size: 22px; font-weight: bold; color: var(--primary); margin-bottom: 12px;">
+        <i class="fas fa-rocket"></i> ЧОЙХОНА КИНО
     </div>
     <nav>
         <a href="index.html" class="nav-link">УЙГА</a>
-        <a href="radio.html" class="nav-link">РАДИО</a>
         <a href="admin.html" class="nav-link">АДМИН</a>
     </nav>
 </header>
 
 <div class="genre-nav" id="genre-bar">
     <button class="genre-btn active" onclick="filterMovies('all', this)">Ҳаммаси</button>
-    <button class="genre-btn" onclick="filterMovies('news', this)">Янгиликлар</button>
-    <button class="genre-btn" onclick="filterMovies('detective', this)">Детектив</button>
     <button class="genre-btn" onclick="filterMovies('action', this)">Боевик</button>
-    <button class="genre-btn" onclick="filterMovies('retro-ссср', this)">Ретро: СССР</button>
+    <button class="genre-btn" onclick="filterMovies('thriller', this)">Триллер</button>
+    <button class="genre-btn" onclick="filterMovies('detective', this)">Детектив</button>
+    <button class="genre-btn" onclick="filterMovies('retro-ссср', this)">Ретро СССР</button>
+    <button class="genre-btn" onclick="filterMovies('comedy', this)">Комедия</button>
     <button class="genre-btn" onclick="filterMovies('fishing', this)">Балиқ ови</button>
 </div>
 
-<div id="no-movies">
-    <i class="fas fa-ghost fa-3x" style="color: #334155; margin-bottom: 15px;"></i>
-    <p>Ҳеч нарса топилмади...</p>
+<div id="no-movies" style="display: none;">
+    <i class="fas fa-search fa-3x" style="margin-bottom: 15px; opacity: 0.5;"></i>
+    <p>Бу бўлимда ҳозирча видеолар йўқ...</p>
 </div>
 
 <div class="video-grid" id="movie-display"></div>
@@ -97,7 +113,7 @@
         
         display.innerHTML = "";
 
-        // Филтрлаш логикаси
+        // Филтрлаш: фақат танланган категорияни ёки ҳаммасини кўрсатиш
         let items = db.filter(p => {
             if (filter === 'all') return true;
             return p.category === filter;
@@ -106,31 +122,43 @@
         if (items.length === 0) {
             noMovies.style.display = 'block';
         } else {
-            noMovies.style.display = 'grid';
-            items.reverse().forEach(item => {
-                let contentHTML = "";
+            noMovies.style.display = 'none';
+            // Энг янгиларини биринчи чиқариш учун reverse()
+            items.slice().reverse().forEach(item => {
+                let mediaHTML = "";
                 
-                // Агар видео бўлса
-                if (item.type === 'video' && item.video) {
-                    contentHTML = `
-                        <div class="video-container">
+                // YouTube видео бўлса
+                if (item.video) {
+                    mediaHTML = `
+                        <div class="media-holder">
                             <iframe src="https://www.youtube.com/embed/${item.video}" allowfullscreen></iframe>
                         </div>`;
                 } 
-                // Агар фақат расм бўлса
+                // Видео йўқ, фақат расм бўлса
                 else if (item.image) {
-                    contentHTML = `<div class="video-container"><img src="${item.image}" style="width:100%; height:100%; object-fit:cover;"></div>`;
+                    mediaHTML = `
+                        <div class="media-holder">
+                            <img src="${item.image}" alt="poster">
+                        </div>`;
+                }
+                // На расм, на видео бўлса - стандарт плашка
+                else {
+                    mediaHTML = `<div class="media-holder" style="display:flex; align-items:center; justify-content:center; background:#000;">
+                                    <i class="fas fa-film fa-2x" style="color:#1e293b"></i>
+                                 </div>`;
                 }
 
                 display.innerHTML += `
                     <div class="movie-card">
-                        ${contentHTML}
+                        ${mediaHTML}
                         <div class="movie-info">
-                            <div class="genre-tag">${item.category}</div>
-                            <div class="movie-title">${item.title}</div>
+                            <div>
+                                <div class="genre-tag">${item.category}</div>
+                                <div class="movie-title">${item.title}</div>
+                            </div>
                             <div class="movie-meta">
-                                <span><i class="far fa-calendar"></i> ${item.date.split(',')[0]}</span>
-                                <span><i class="far fa-eye"></i> ${item.views || 0}</span>
+                                <span><i class="far fa-calendar-alt"></i> ${item.date ? item.date.split(',')[0] : 'Яқинда'}</span>
+                                <span><i class="far fa-clock"></i> 2026</span>
                             </div>
                         </div>
                     </div>`;
@@ -144,6 +172,7 @@
         renderMovies(genre);
     }
 
+    // Саҳифа юкланганда ҳаммасини чиқариш
     window.onload = () => renderMovies('all');
 </script>
 
