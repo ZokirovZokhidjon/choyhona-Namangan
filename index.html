@@ -9,45 +9,31 @@
     <style>
         :root { --primary: #d35400; --dark: #2c3e50; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; }
-
         header { background: var(--dark); color: white; padding: 15px 20px; text-align: center; }
         .logo-text { font-size: 28px; font-weight: bold; color: var(--primary); margin-bottom: 10px; }
         .main-nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
-        .nav-btn { 
-            background: rgba(255,255,255,0.1); color: white; text-decoration: none; 
-            padding: 10px 18px; border-radius: 25px; font-size: 14px; transition: 0.3s;
-        }
+        .nav-btn { background: rgba(255,255,255,0.1); color: white; text-decoration: none; padding: 10px 18px; border-radius: 25px; font-size: 14px; transition: 0.3s; }
         .nav-btn:hover, .nav-btn.active { background: var(--primary); }
-
         .container { max-width: 1200px; margin: 30px auto; display: grid; grid-template-columns: 2fr 1fr; gap: 25px; padding: 0 15px; }
-
-        .post-card { background: white; border-radius: 15px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .post-card { background: white; border-radius: 15px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: 0.3s; }
+        .post-card:hover { transform: translateY(-5px); }
+        .post-media img { width: 100%; height: 300px; object-fit: cover; display: block; }
         .post-content { padding: 20px; }
         .post-cat { color: var(--primary); font-size: 12px; font-weight: bold; text-transform: uppercase; }
         .post-title { font-size: 22px; margin: 10px 0; color: var(--dark); }
         .post-preview { color: #666; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         .btn-read { display: inline-block; margin-top: 15px; color: var(--primary); cursor: pointer; font-weight: bold; }
-
         .sidebar-title { font-size: 18px; border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 15px; }
         .side-post { background: white; padding: 12px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; border-left: 4px solid transparent; transition: 0.2s; }
         .side-post:hover { border-left-color: var(--primary); background: #fffcf9; }
-        .side-post b { font-size: 14px; display: block; line-height: 1.3; }
-
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; overflow-y: auto; padding: 20px; }
         .modal-inner { background: white; max-width: 800px; margin: 30px auto; border-radius: 20px; padding: 35px; position: relative; }
         .close-btn { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; color: #ccc; }
         .full-text { white-space: pre-line; line-height: 1.8; font-size: 18px; color: #333; }
-        .video-box { margin-top: 20px; position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000; }
+        .video-box { margin-bottom: 20px; position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000; }
         .video-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-
-        @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
-        
-        .header-logo {
-            border-radius: 150px;
-            border: 3px groove #d35400;
-            box-shadow: 3px 5px 8px rgba(0,0,0,0.3);
-            object-fit: cover;
-        }
+        .header-logo { border-radius: 50%; border: 3px groove #d35400; box-shadow: 3px 5px 8px rgba(0,0,0,0.3); object-fit: cover; }
+        @media (max-width: 900px) { .container { grid-template-columns: 1fr; } .post-media img { height: 200px; } }
     </style>
 </head>
 <body>
@@ -93,56 +79,48 @@
             return;
         }
 
-        // ТУЗАТИШ: Энди 'news' ва 'cooking' (Ширин таомлар) бирга чиқади
+        // Фақат керакли категорияларни оламиз
         const mainPosts = db.filter(p => p.category === 'news' || p.category === 'cooking');
-        const reversed = mainPosts.slice().reverse();
+        const reversed = [...mainPosts].reverse();
 
-        if (reversed.length === 0) {
-            feed.innerHTML = "<h3>Ҳозирча янгиликлар йўқ.</h3>";
-        } else {
-            feed.innerHTML = "";
-            reversed.forEach((post) => {
-                let mediaHtml = "";
-                
-                // Агар видео бўлса видеони, бўлмаса расмни чиқарамиз
-                if (post.video) {
-                    mediaHtml = `
-                        <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden;">
-                            <iframe src="https://www.youtube.com/embed/${post.video}" 
-                                    style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" 
-                                    allowfullscreen></iframe>
-                        </div>`;
-                } else {
-                    let imgSrc = post.image ? post.image : 'https://via.placeholder.com/600x300?text=Choyhona+News';
-                    mediaHtml = `<img src="${imgSrc}" style="width:100%; height:250px; object-fit:cover;">`;
-                }
-
-                feed.innerHTML += `
-                    <div class="post-card">
-                        ${mediaHtml}
-                        <div class="post-content">
-                            <span class="post-cat">${post.category === 'news' ? 'Янгиликлар' : 'Ширин таомлар'}</span>
-                            <h2 class="post-title">${post.title}</h2>
-                            <p class="post-preview">${post.content.substring(0, 150)}...</p>
-                            <span class="btn-read" onclick="readFull(${db.indexOf(post)})">Давомини ўқиш →</span>
-                        </div>
+        feed.innerHTML = "";
+        reversed.forEach((post) => {
+            const originalIndex = db.indexOf(post);
+            let mediaHtml = "";
+            
+            // Видео ёки Расмни танлаш логикаси
+            if (post.video && post.video !== "") {
+                mediaHtml = `
+                    <div class="video-box" style="margin-bottom:0; border-radius:0;">
+                        <iframe src="https://www.youtube.com/embed/${post.video}" allowfullscreen></iframe>
                     </div>`;
-            });
-        }
+            } else if (post.image && post.image !== "") {
+                mediaHtml = `<div class="post-media"><img src="${post.image}" onerror="this.src='https://via.placeholder.com/600x300?text=Rasm+Topilmadi'"></div>`;
+            } else {
+                mediaHtml = `<div class="post-media"><img src="https://via.placeholder.com/600x300?text=Choyhona+News"></div>`;
+            }
 
-        // Ён томондаги кичик меню (охирги 5 та хабар)
-        side.innerHTML = "";
-        reversed.slice(0, 5).forEach((post) => {
-            side.innerHTML += `
-                <div class="side-post" onclick="readFull(${db.indexOf(post)})">
-                    <b>${post.title}</b>
-                    <small style="color:#aaa; font-size:10px; display:block;">${post.date}</small>
+            feed.innerHTML += `
+                <div class="post-card">
+                    ${mediaHtml}
+                    <div class="post-content">
+                        <span class="post-cat">${post.category === 'news' ? 'Янгиликлар' : 'Ширин таомлар'}</span>
+                        <h2 class="post-title">${post.title}</h2>
+                        <p class="post-preview">${post.content.substring(0, 150)}...</p>
+                        <span class="btn-read" onclick="readFull(${originalIndex})">Давомини ўқиш →</span>
+                    </div>
                 </div>`;
         });
 
-        // Сайтга умумий ташрифни ҳисоблаш
-        let total = localStorage.getItem('site_total_views') || 0;
-        localStorage.setItem('site_total_views', parseInt(total) + 1);
+        // Sidebar
+        side.innerHTML = "";
+        reversed.slice(0, 6).forEach((post) => {
+            side.innerHTML += `
+                <div class="side-post" onclick="readFull(${db.indexOf(post)})">
+                    <b style="font-size:14px;">${post.title}</b>
+                    <small style="color:#aaa; font-size:10px;">${post.date}</small>
+                </div>`;
+        });
     }
 
     function readFull(index) {
@@ -150,22 +128,24 @@
         const modal = document.getElementById('postModal');
         const content = document.getElementById('modal-content');
         
-        // Кўришлар сонини ошириш (Статистика учун)
         p.views = (p.views || 0) + 1;
-        db[index] = p;
         localStorage.setItem('choyhona_posts', JSON.stringify(db));
 
-        let media = p.video ? 
-            `<div class="video-box"><iframe src="https://www.youtube.com/embed/${p.video}" allowfullscreen></iframe></div>` : 
-            (p.image ? `<img src="${p.image}" style="width:100%; border-radius:10px; margin-bottom:15px;">` : "");
+        let media = "";
+        if (p.video) {
+            media = `<div class="video-box"><iframe src="https://www.youtube.com/embed/${p.video}" allowfullscreen></iframe></div>`;
+        } else if (p.image) {
+            media = `<img src="${p.image}" style="width:100%; border-radius:10px; margin-bottom:15px;" onerror="this.style.display='none'">`;
+        }
 
         content.innerHTML = `
             <span class="post-cat">${p.category}</span>
             <h1 style="color:var(--dark); margin:15px 0;">${p.title}</h1>
             ${media}
             <p class="full-text">${p.content}</p>
-            <p style="margin-top:20px; font-size:12px; color:#999;">
-                Сана: ${p.date} | <i class="fas fa-eye"></i> Кўрилди: ${p.views}
+            <hr>
+            <p style="font-size:12px; color:#999;">
+                <i class="far fa-calendar-alt"></i> ${p.date} | <i class="fas fa-eye"></i> Кўрилди: ${p.views}
             </p>
         `;
         modal.style.display = 'block';
