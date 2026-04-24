@@ -9,6 +9,7 @@
         :root { 
             --neon-orange: #ff6a00; 
             --neon-blue: #00d4ff; 
+            --neon-green: #39ff14;
             --dark-space: #0f172a;
             --glass: rgba(255, 255, 255, 0.07);
         }
@@ -18,7 +19,7 @@
             color: white; margin: 0; padding: 10px; min-height: 100vh; overflow-x: hidden;
         }
 
-        /* --- ЛОГИН ОЙНАСИ (Эски дизайн) --- */
+        /* --- ЛОГИН ОЙНАСИ --- */
         #login-overlay { 
             position: fixed; inset: 0; background: var(--dark-space); 
             display: flex; justify-content: center; align-items: center; z-index: 10000; 
@@ -52,25 +53,27 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.2);
         }
 
-        h2 { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); font-size: 18px; }
+        h2 { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); font-size: 18px; margin-bottom: 20px; }
+        label { font-size: 12px; color: #888; margin-left: 5px; }
 
         input, textarea, select { 
-            width: 100%; padding: 12px; margin-bottom: 10px;
-            background: rgba(0,0,0,0.6); border: 1px solid #334155; border-radius: 12px; color: white; box-sizing: border-box;
+            width: 100%; padding: 12px; margin-top: 5px; margin-bottom: 12px;
+            background: rgba(0,0,0,0.6); border: 1px solid #334155; border-radius: 12px; color: white; box-sizing: border-box; font-size: 16px;
         }
 
         .btn-neon { 
             background: linear-gradient(45deg, #00d4ff, #0055ff); border: none; 
             padding: 15px; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; width: 100%;
+            text-transform: uppercase; letter-spacing: 1px;
         }
 
         .post-item { 
-            background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 15px; margin-bottom: 10px;
+            background: rgba(15, 23, 42, 0.6); padding: 15px; border-radius: 18px; margin-bottom: 12px;
             display: flex; justify-content: space-between; align-items: center; border: 1px solid #1e293b;
         }
+        .post-info b { color: var(--neon-orange); font-size: 15px; }
 
-        /* Мобил созламалар */
-        @media (max-width: 800px) {
+        @media (max-width: 900px) {
             .main-panel { grid-template-columns: 1fr; }
         }
     </style>
@@ -89,31 +92,60 @@
 </div>
 
 <div id="admin-wrapper">
-    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h3><i class="fas fa-rocket"></i> Панел</h3>
-        <button onclick="logout()" style="background:none; border:1px solid #e74c3c; color:#e74c3c; padding:5px 10px; border-radius:10px;">Exit</button>
+    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 10px;">
+        <h3><i class="fas fa-rocket"></i> ROCKET PANEL</h3>
+        <button onclick="logout()" style="background:none; border:1px solid #e74c3c; color:#e74c3c; padding:8px 15px; border-radius:12px; font-weight:bold;">EXIT</button>
     </div>
 
     <div class="main-panel">
         <div class="glass-box">
-            <h2><i class="fas fa-plus-circle"></i> Янги Контент</h2>
-            <input type="text" id="p-title" placeholder="Сарлавҳа...">
+            <h2><i class="fas fa-plus-circle"></i> ЯНГИ КОНТЕНТ</h2>
+            
+            <label>Сарлавҳа</label>
+            <input type="text" id="p-title" placeholder="Мавзу номи...">
+
+            <label>Саҳифани танланг</label>
             <select id="p-cat">
-                <option value="main">🏠 Асосий саҳифа</option>
-                <option value="news">📰 Янгиликлар</option>
-                <option value="detective">🕵️ Кино: Детектив</option>
-                <option value="poetry">✍️ Шеърият</option>
-                <option value="fishing">🎣 Балиқ ови</option>
+                <optgroup label="Асосий">
+                    <option value="main">🏠 Асосий саҳифа</option>
+                    <option value="news">📰 Янгиликлар</option>
+                </optgroup>
+                <optgroup label="Кулинария">
+                    <option value="cooking">🍲 Ширин таомлар</option>
+                    <option value="national">🇺🇿 Миллий таомлар</option>
+                    <option value="dessert">🍰 Пишириқлар</option>
+                </optgroup>
+                <optgroup label="Кинотеатр (Жанрлар)">
+                    <option value="action">🔥 Боевик</option>
+                    <option value="thriller">🔪 Триллер</option>
+                    <option value="detective">🕵️ Детектив</option>
+                    <option value="retro-ссср">📺 Ретро СССР</option>
+                    <option value="comedy">😂 Комедия</option>
+                    <option value="horror">👻 Қўрқинчли</option>
+                    <option value="drama">🎭 Драма</option>
+                </optgroup>
+                <optgroup label="Бўлимлар">
+                    <option value="poetry">✍️ Шеърият</option>
+                    <option value="health">🩺 Саломатлик</option>
+                    <option value="fishing">🎣 Балиқ ови</option>
+                </optgroup>
             </select>
-            <input type="text" id="p-video" placeholder="YouTube Video ID">
-            <input type="text" id="p-img" placeholder="Расм линки (ImgBB)">
-            <textarea id="p-text" rows="5" placeholder="Матн..."></textarea>
-            <button class="btn-neon" onclick="savePost()">САҚЛАШ</button>
+
+            <label>YouTube ID</label>
+            <input type="text" id="p-video" placeholder="ID: dQw4w9WgXcQ">
+
+            <label>Расм линки</label>
+            <input type="text" id="p-img" placeholder="https://i.ibb.co/...">
+
+            <label>Матн / Мазмуни</label>
+            <textarea id="p-text" rows="6" placeholder="Мақола ёки шеър матни..."></textarea>
+
+            <button class="btn-neon" onclick="savePost()">ТИЗИМГА ЖОЙЛАШ</button>
         </div>
 
         <div class="glass-box">
-            <h2><i class="fas fa-database"></i> Маълумотлар</h2>
-            <div id="posts-list"></div>
+            <h2><i class="fas fa-database"></i> МАВЖУД МАЪЛУМОТЛАР</h2>
+            <div id="posts-list" style="max-height: 600px; overflow-y: auto; padding-right: 5px;"></div>
         </div>
     </div>
 </div>
@@ -121,18 +153,13 @@
 <script>
     let db = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
 
-    // ЛОГИН ФУНКЦИЯСИ
     function checkAuth() {
         const u = document.getElementById('u_name').value;
         const p = document.getElementById('u_pass').value;
-
-        // Энди оддий текширув (Телефонда муаммо бўлмаслиги учун)
         if(u === "admin" && p === "7528") {
             sessionStorage.setItem('choyhona_admin', 'true');
             loadAdmin();
-        } else { 
-            alert("Хато! Қайтадан уриниб кўринг."); 
-        }
+        } else { alert("ACCESS DENIED!"); }
     }
 
     function loadAdmin() {
@@ -144,9 +171,10 @@
     function savePost() {
         const title = document.getElementById('p-title').value;
         const text = document.getElementById('p-text').value;
-        if(!title || !text) { alert("Тўлдиринг!"); return; }
+        if(!title || !text) { alert("Маълумотни тўлдиринг!"); return; }
 
         const post = {
+            id: Date.now(),
             title: title,
             content: text,
             category: document.getElementById('p-cat').value,
@@ -158,25 +186,37 @@
 
         db.push(post);
         localStorage.setItem('choyhona_posts', JSON.stringify(db));
-        alert("Сақланди!");
+        alert("Муваффақиятли сақланди!");
         renderList();
+        
+        // Формани тозалаш
+        document.getElementById('p-title').value = "";
+        document.getElementById('p-text').value = "";
+        document.getElementById('p-video').value = "";
+        document.getElementById('p-img').value = "";
     }
 
     function renderList() {
         const list = document.getElementById('posts-list');
         list.innerHTML = "";
-        db.forEach((p, i) => {
+        db.reverse().forEach((p, i) => {
             list.innerHTML += `
                 <div class="post-item">
-                    <span>${p.title.substring(0,20)}...</span>
-                    <button onclick="deletePost(${i})" style="color:#e74c3c; background:none; border:none;"><i class="fa fa-trash"></i></button>
+                    <div class="post-info">
+                        <b>${p.title.substring(0, 30)}...</b><br>
+                        <small><i class="fas fa-tag"></i> ${p.category}</small>
+                    </div>
+                    <button onclick="deletePost(${i})" style="color:#e74c3c; background:none; border:1px solid #e74c3c; padding:5px 10px; border-radius:8px; cursor:pointer;"><i class="fa fa-trash"></i></button>
                 </div>`;
         });
+        db.reverse(); // Аслини қайтариб қўямиз
     }
 
     function deletePost(i) {
-        if(confirm("Ўчирамизми?")) {
+        if(confirm("Ўчиришни тасдиқлайсизми?")) {
+            db.reverse(); // Рўйхат тескари бўлгани учун
             db.splice(i, 1);
+            db.reverse();
             localStorage.setItem('choyhona_posts', JSON.stringify(db));
             renderList();
         }
