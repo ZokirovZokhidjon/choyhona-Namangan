@@ -2,139 +2,135 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Админ Панел - Чойхона</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Чойхона Портали</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #00d4ff; --secondary: #ff6a00; --bg: #0f172a; --card: #1e293b; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; padding: 20px; }
+        :root { --blue: #00d4ff; --orange: #ff6a00; --bg: #0f172a; --card: #1e293b; }
         
-        .admin-container { max-width: 600px; margin: 0 auto; background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid var(--primary); box-shadow: 0 0 20px rgba(0, 212, 255, 0.2); }
-        h2 { text-align: center; color: var(--primary); margin-bottom: 25px; }
-
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 8px; font-size: 14px; color: #94a3b8; }
-        
-        input, textarea, select { 
-            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #334155; 
-            background: #0f172a; color: white; font-size: 16px; box-sizing: border-box;
+        body { 
+            font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; 
+            margin: 0; padding: 0; overflow-x: hidden;
         }
 
-        input:focus, textarea:focus, select:focus { border-color: var(--primary); outline: none; }
-
-        .btn-submit { 
-            width: 100%; padding: 15px; background: var(--primary); color: #000; 
-            border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s;
+        /* Шапка ва Меню */
+        header {
+            background: rgba(15, 23, 42, 0.98); border-bottom: 2px solid var(--blue);
+            padding: 0 5%; height: 70px; display: flex; justify-content: space-between;
+            align-items: center; position: sticky; top: 0; z-index: 1000;
         }
-        .btn-submit:hover { background: var(--secondary); color: white; }
 
-        .nav-back { display: block; text-align: center; margin-top: 20px; color: #64748b; text-decoration: none; font-size: 14px; }
-        
-        /* Мобил созламалар */
-        @media (max-width: 480px) {
-            body { padding: 10px; }
-            .admin-container { padding: 15px; }
+        .logo { font-size: 22px; font-weight: 800; color: var(--blue); text-decoration: none; }
+
+        .nav-menu { display: flex; gap: 10px; }
+        .nav-menu a { 
+            color: #cbd5e1; text-decoration: none; font-size: 14px; 
+            padding: 8px 12px; border-radius: 8px; transition: 0.3s;
+        }
+        .nav-menu a:hover, .nav-menu a.active { background: var(--blue); color: #000; }
+
+        /* Бургер меню (Мобил учун) */
+        .burger { display: none; font-size: 24px; cursor: pointer; }
+
+        /* Асосий қисм */
+        .container { padding: 20px 5%; max-width: 1200px; margin: 0 auto; }
+
+        .grid { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 25px; margin-top: 20px; 
+        }
+
+        .card { 
+            background: var(--card); border-radius: 15px; overflow: hidden; 
+            border: 1px solid rgba(255,255,255,0.1); transition: 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); border-color: var(--blue); }
+
+        .card-img { width: 100%; height: 180px; object-fit: cover; }
+        .card-content { padding: 15px; }
+        .card-cat { color: var(--orange); font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .card-title { font-size: 18px; margin: 10px 0; font-weight: bold; }
+        .card-text { font-size: 14px; color: #94a3b8; line-height: 1.5; }
+
+        /* МОБИЛ СОЗЛАМАЛАР */
+        @media (max-width: 850px) {
+            .burger { display: block; }
+            .nav-menu { 
+                position: fixed; top: 70px; left: -100%; width: 100%; height: calc(100vh - 70px);
+                background: var(--bg); flex-direction: column; padding: 20px; transition: 0.4s;
+            }
+            .nav-menu.open { left: 0; }
+            .nav-menu a { font-size: 18px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+            .grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<div class="admin-container">
-    <h2><i class="fas fa-user-shield"></i> БОШҚАРУВ ПАНЕЛИ</h2>
-    
-    <div class="form-group">
-        <label>Сарлавҳа (Title)</label>
-        <input type="text" id="post-title" placeholder="Мақола ёки фильм номи...">
-    </div>
+<header>
+    <a href="index.html" class="logo"><i class="fas fa-handshake"></i> ЧОЙХОНА</a>
+    <div class="burger" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+    <nav class="nav-menu" id="nav-menu">
+        <a href="index.html" class="active">Асосий</a>
+        <a href="cinema.html">Кинотеатр</a>
+        <a href="radio.html">Радио</a>
+        <a href="poetry.html">Шеърият</a>
+        <a href="fishing.html">Балиқ ови</a>
+        <a href="health.html">Саломатлик</a>
+        <a href="admin.html">Админ</a>
+    </nav>
+</header>
 
-    <div class="form-group">
-        <label>Категория (Қаерда чиқсин?)</label>
-        <select id="post-category">
-            <optgroup label="Умумий">
-                <option value="main">Асосий саҳифа</option>
-                <option value="news">Янгиликлар</option>
-            </optgroup>
-            <optgroup label="Кинотеатр">
-                <option value="detective">Кино: Детектив</option>
-                <option value="action">Кино: Боевик</option>
-                <option value="retro-ссср">Кино: Ретро СССР</option>
-                <option value="comedy">Кино: Комедия</option>
-            </optgroup>
-            <optgroup label="Бошқалар">
-                <option value="poetry">Шеърият</option>
-                <option value="fishing">Балиқ ови</option>
-                <option value="health">Саломатлик</option>
-            </optgroup>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label>Пост тури</label>
-        <select id="post-type" onchange="toggleInputs()">
-            <option value="article">Оддий мақола (Расм билан)</option>
-            <option value="video">Видео (YouTube линк)</option>
-        </select>
-    </div>
-
-    <div class="form-group" id="image-input-group">
-        <label>Расм линки (ImgBB дан)</label>
-        <input type="text" id="post-image" placeholder="https://i.ibb.co/...">
-    </div>
-
-    <div class="form-group" id="video-input-group" style="display:none;">
-        <label>YouTube Видео ID</label>
-        <input type="text" id="post-video" placeholder="Масалан: dQw4w9WgXcQ">
-    </div>
-
-    <div class="form-group">
-        <label>Батафсил маълумот / Матн</label>
-        <textarea id="post-content" rows="5" placeholder="Мақола матнини шу ерга ёзинг..."></textarea>
-    </div>
-
-    <button class="btn-submit" onclick="savePost()">ПОСТНИ ЖОЙЛАШ</button>
-    
-    <a href="index.html" class="nav-back"><i class="fas fa-arrow-left"></i> Сайтга қайтиш</a>
+<div class="container">
+    <h2 id="status-title">Янги мақолалар</h2>
+    <div class="grid" id="main-grid">
+        </div>
 </div>
 
 <script>
-    function toggleInputs() {
-        const type = document.getElementById('post-type').value;
-        document.getElementById('image-input-group').style.display = (type === 'article') ? 'block' : 'none';
-        document.getElementById('video-input-group').style.display = (type === 'video') ? 'block' : 'none';
+    function toggleMenu() {
+        document.getElementById('nav-menu').classList.toggle('open');
     }
 
-    function savePost() {
-        const title = document.getElementById('post-title').value;
-        const category = document.getElementById('post-category').value;
-        const type = document.getElementById('post-type').value;
-        const image = document.getElementById('post-image').value;
-        const video = document.getElementById('post-video').value;
-        const content = document.getElementById('post-content').value;
-
-        if(!title || !content) {
-            alert("Илтимос, сарлавҳа ва матнни тўлдиринг!");
+    function loadData() {
+        const grid = document.getElementById('main-grid');
+        // Эслатма: Телефонда кўриниши учун LocalStorage-дан ташқари, 
+        // тест учун битта объект қўшиб қўямиз
+        const localData = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
+        
+        // Агар LocalStorage бўш бўлса (масалан, телефонда), намунавий пост чиқарамиз
+        if (localData.length === 0) {
+            grid.innerHTML = `
+                <div class="card">
+                    <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" class="card-img">
+                    <div class="card-content">
+                        <div class="card-cat">Эслатма</div>
+                        <h3 class="card-title">Маълумот топилмади</h3>
+                        <p class="card-text">Телефонда контент кўриниши учун Админ бўлимидан маълумот киритинг ёки Firebase базасини уланг.</p>
+                    </div>
+                </div>`;
             return;
         }
 
-        const newPost = {
-            id: Date.now(),
-            title: title,
-            category: category,
-            type: type,
-            image: image,
-            video: video,
-            content: content,
-            date: new Date().toLocaleString(),
-            views: 0
-        };
+        grid.innerHTML = "";
+        // Фақат "main" ёки "news" бўлганларини чиқариш
+        const filtered = localData.filter(i => i.category === 'main' || i.category === 'news');
 
-        let db = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
-        db.push(newPost);
-        localStorage.setItem('choyhona_posts', JSON.stringify(db));
-
-        alert("Муваффақиятли қўшилди!");
-        window.location.href = "index.html"; // Пост қўшилгач асосий бетга қайтади
+        filtered.reverse().forEach(item => {
+            const img = item.image || (item.video ? `https://img.youtube.com/vi/${item.video}/maxresdefault.jpg` : 'https://via.placeholder.com/400x200');
+            grid.innerHTML += `
+                <div class="card">
+                    <img src="${img}" class="card-img">
+                    <div class="card-content">
+                        <div class="card-cat">${item.category}</div>
+                        <h3 class="card-title">${item.title}</h3>
+                        <p class="card-text">${item.content.substring(0, 100)}...</p>
+                    </div>
+                </div>`;
+        });
     }
+
+    window.onload = loadData;
 </script>
 
 </body>
