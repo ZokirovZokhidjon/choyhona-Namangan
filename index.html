@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <meta name="google-site-verification" content="lf0h1OWqEzgE9H9Y4Kmp4Ij-EJRjDyLsZtpH0H87ihs" />
     <title>Чойхона - Асосий Саҳифа</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -11,28 +10,67 @@
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; }
         header { background: var(--dark); color: white; padding: 15px 20px; text-align: center; }
         .logo-text { font-size: 28px; font-weight: bold; color: var(--primary); margin-bottom: 10px; }
-        .main-nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
-        .nav-btn { background: rgba(255,255,255,0.1); color: white; text-decoration: none; padding: 10px 18px; border-radius: 25px; font-size: 14px; transition: 0.3s; }
+        
+        /* МЕНЮ ВА ДРОПДАУН */
+        .main-nav { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .nav-btn { background: rgba(255,255,255,0.1); color: white; text-decoration: none; padding: 10px 18px; border-radius: 25px; font-size: 14px; transition: 0.3s; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; }
         .nav-btn:hover, .nav-btn.active { background: var(--primary); }
+
+        .dropdown { position: relative; }
+        .dropdown-content { 
+            display: none; 
+            position: absolute; 
+            background-color: var(--dark); 
+            min-width: 200px; 
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.3); 
+            z-index: 1000; 
+            border-radius: 10px; 
+            top: 100%;
+            left: 0;
+            margin-top: 2px;
+            overflow: hidden;
+        }
+        .dropdown::before { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 12px; }
+        .dropdown:hover .dropdown-content { display: block; }
+        .dropdown-content a { color: white; padding: 12px 16px; text-decoration: none; display: block; font-size: 14px; text-align: left; }
+        .dropdown-content a:hover { background-color: var(--primary); }
+
+        /* КАРТОЧКАЛАР ВА ВИДЕО */
         .container { max-width: 1200px; margin: 30px auto; display: grid; grid-template-columns: 2fr 1fr; gap: 25px; padding: 0 15px; }
-        .post-card { background: white; border-radius: 15px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: 0.3s; }
-        .post-card:hover { transform: translateY(-5px); }
-        .post-media img { width: 100%; height: 300px; object-fit: cover; display: block; }
+        .post-card { background: white; border-radius: 15px; margin-bottom: 25px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .post-media img { width: 100%; height: 350px; object-fit: cover; }
+        .video-box { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; }
+        .video-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        
         .post-content { padding: 20px; }
         .post-cat { color: var(--primary); font-size: 12px; font-weight: bold; text-transform: uppercase; }
-        .post-title { font-size: 22px; margin: 10px 0; color: var(--dark); }
-        .post-preview { color: #666; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-        .btn-read { display: inline-block; margin-top: 15px; color: var(--primary); cursor: pointer; font-weight: bold; }
-        .sidebar-title { font-size: 18px; border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 15px; }
-        .side-post { background: white; padding: 12px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; border-left: 4px solid transparent; transition: 0.2s; }
-        .side-post:hover { border-left-color: var(--primary); background: #fffcf9; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; overflow-y: auto; padding: 20px; }
-        .modal-inner { background: white; max-width: 800px; margin: 30px auto; border-radius: 20px; padding: 35px; position: relative; }
-        .close-btn { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; color: #ccc; }
+        .post-title { font-size: 24px; margin: 10px 0; color: var(--dark); }
+        
+        /* ШЕЪРЛАР ВА МАТН УЧУН */
+        .post-preview { 
+            color: #444; 
+            line-height: 1.6; 
+            white-space: pre-line; /* Мана шу шеърларни қаторини сақлайди */
+            display: -webkit-box; 
+            -webkit-line-clamp: 4; 
+            -webkit-box-orient: vertical; 
+            overflow: hidden; 
+        }
         .full-text { white-space: pre-line; line-height: 1.8; font-size: 18px; color: #333; }
-        .video-box { margin-bottom: 20px; position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000; }
-        .video-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        .header-logo { border-radius: 50%; border: 3px groove #d35400; box-shadow: 3px 5px 8px rgba(0,0,0,0.3); object-fit: cover; }
+
+        .btn-read { display: inline-block; margin-top: 15px; color: var(--primary); cursor: pointer; font-weight: bold; border: 1px solid var(--primary); padding: 5px 15px; border-radius: 20px; transition: 0.3s; }
+        .btn-read:hover { background: var(--primary); color: white; }
+
+        .sidebar-title { font-size: 18px; border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 15px; }
+        .side-post { background: white; padding: 12px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; border-left: 4px solid transparent; }
+        .side-post:hover { border-left-color: var(--primary); }
+
+        .header-logo { border-radius: 50%; border: 3px groove #d35400; object-fit: cover; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; overflow-y: auto; padding: 10px; }
+        .modal-inner { background: white; max-width: 850px; margin: 20px auto; border-radius: 15px; padding: 30px; position: relative; }
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 35px; cursor: pointer; color: #999; }
+        
         @media (max-width: 900px) { .container { grid-template-columns: 1fr; } .post-media img { height: 200px; } }
     </style>
 </head>
@@ -41,13 +79,20 @@
 <header>
     <img src="log.webp" alt="logo" width="100" height="100" class="header-logo"><br>
     <div class="logo-text">ЧОЙХОНА</div>
+    
     <div class="main-nav">
         <a href="index.html" class="nav-btn active">Асосий саҳифа</a>
-        <a href="poetry.html" class="nav-btn">Шеърият</a>
-        <a href="classic.html" class="nav-btn">Мумтоз наволар</a>
-        <a href="cockes.html" class="nav-btn">Ширин таомлар</a>
-        <a href="health.html" class="nav-btn">Саломатлик</a>
-        <a href="radio.html" class="nav-btn">Онлайн Радио</a>
+        <div class="dropdown">
+            <button class="nav-btn">Бўлимлар <i class="fas fa-chevron-down"></i></button>
+            <div class="dropdown-content">
+                <a href="poetry.html"><i class="fas fa-feather-alt"></i> Шеърият</a>
+                <a href="classic.html"><i class="fas fa-music"></i> Мумтоз наволар</a>
+                <a href="cockes.html"><i class="fas fa-utensils"></i> Ширин таомлар</a>
+                <a href="health.html"><i class="fas fa-heartbeat"></i> Саломатлик</a>
+            </div>
+        </div>
+        <a href="radio.html" class="nav-btn">Радио</a>
+        <a href="cinema.html" class="nav-btn">Кинотеатр</a>
         <a href="admin.html" class="nav-btn"><i class="fas fa-lock"></i></a>
     </div>
 </header>
@@ -55,7 +100,7 @@
 <div class="container">
     <main id="blog-feed"></main>
     <aside>
-        <h3 class="sidebar-title">Энг сўнгги хабарлар</h3>
+        <h3 class="sidebar-title">Сўнгги хабарлар</h3>
         <div id="side-feed"></div>
     </aside>
 </div>
@@ -75,50 +120,47 @@
         const side = document.getElementById('side-feed');
 
         if (db.length === 0) {
-            feed.innerHTML = "<h3>Мақолалар мавжуд эмас.</h3>";
+            feed.innerHTML = "<h3>Ҳозирча постлар йўқ.</h3>";
             return;
         }
 
-        // Фақат керакли категорияларни оламиз
-        const mainPosts = db.filter(p => p.category === 'news' || p.category === 'cooking');
-        const reversed = [...mainPosts].reverse();
+        // ХАММА постларни чиқарамиз (филтрсиз, янгиси тепада)
+        const reversed = [...db].reverse();
 
         feed.innerHTML = "";
         reversed.forEach((post) => {
             const originalIndex = db.indexOf(post);
             let mediaHtml = "";
             
-            // Видео ёки Расмни танлаш логикаси
+            // Агар видео бўлса, плеерни кўрсатиш
             if (post.video && post.video !== "") {
                 mediaHtml = `
-                    <div class="video-box" style="margin-bottom:0; border-radius:0;">
+                    <div class="video-box">
                         <iframe src="https://www.youtube.com/embed/${post.video}" allowfullscreen></iframe>
                     </div>`;
             } else if (post.image && post.image !== "") {
-                mediaHtml = `<div class="post-media"><img src="${post.image}" onerror="this.src='https://via.placeholder.com/600x300?text=Rasm+Topilmadi'"></div>`;
-            } else {
-                mediaHtml = `<div class="post-media"><img src="https://via.placeholder.com/600x300?text=Choyhona+News"></div>`;
+                mediaHtml = `<div class="post-media"><img src="${post.image}" onerror="this.style.display='none'"></div>`;
             }
 
             feed.innerHTML += `
                 <div class="post-card">
                     ${mediaHtml}
                     <div class="post-content">
-                        <span class="post-cat">${post.category === 'news' ? 'Янгиликлар' : 'Ширин таомлар'}</span>
+                        <span class="post-cat">${post.category}</span>
                         <h2 class="post-title">${post.title}</h2>
-                        <p class="post-preview">${post.content.substring(0, 150)}...</p>
-                        <span class="btn-read" onclick="readFull(${originalIndex})">Давомини ўқиш →</span>
+                        <div class="post-preview">${post.content}</div>
+                        <span class="btn-read" onclick="readFull(${originalIndex})">Тўлиқ ўқиш →</span>
                     </div>
                 </div>`;
         });
 
-        // Sidebar
+        // Сидебар
         side.innerHTML = "";
-        reversed.slice(0, 6).forEach((post) => {
+        reversed.slice(0, 8).forEach((post) => {
             side.innerHTML += `
                 <div class="side-post" onclick="readFull(${db.indexOf(post)})">
-                    <b style="font-size:14px;">${post.title}</b>
-                    <small style="color:#aaa; font-size:10px;">${post.date}</small>
+                    <b>${post.title}</b><br>
+                    <small style="color:#aaa;">${post.date}</small>
                 </div>`;
         });
     }
@@ -133,18 +175,18 @@
 
         let media = "";
         if (p.video) {
-            media = `<div class="video-box"><iframe src="https://www.youtube.com/embed/${p.video}" allowfullscreen></iframe></div>`;
+            media = `<div class="video-box" style="margin-bottom:20px;"><iframe src="https://www.youtube.com/embed/${p.video}" allowfullscreen></iframe></div>`;
         } else if (p.image) {
-            media = `<img src="${p.image}" style="width:100%; border-radius:10px; margin-bottom:15px;" onerror="this.style.display='none'">`;
+            media = `<img src="${p.image}" style="width:100%; border-radius:10px; margin-bottom:20px;" onerror="this.style.display='none'">`;
         }
 
         content.innerHTML = `
             <span class="post-cat">${p.category}</span>
-            <h1 style="color:var(--dark); margin:15px 0;">${p.title}</h1>
+            <h1 style="margin:10px 0;">${p.title}</h1>
             ${media}
-            <p class="full-text">${p.content}</p>
-            <hr>
-            <p style="font-size:12px; color:#999;">
+            <div class="full-text">${p.content}</div>
+            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+            <p style="font-size:13px; color:#999;">
                 <i class="far fa-calendar-alt"></i> ${p.date} | <i class="fas fa-eye"></i> Кўрилди: ${p.views}
             </p>
         `;
