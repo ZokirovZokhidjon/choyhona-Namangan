@@ -2,179 +2,104 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Чойхона - Кинотеатр</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choyhona - Кинотеатр</title>
+    <link href="https://fonts.googleapis.com/css2?family=Alice&family=Ruslan+Display&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
-        :root { --primary: #ff6a00; --dark: #0f172a; --glass: rgba(255,255,255,0.1); }
-        
-        body { 
-            font-family: 'Segoe UI', Roboto, sans-serif; 
-            background: #0f172a; color: white; margin: 0; padding: 0; 
-            overflow-x: hidden;
-        }
-        
-        header { 
-            background: rgba(0,0,0,0.9); padding: 15px; text-align: center; 
-            border-bottom: 2px solid var(--primary); position: sticky; top: 0; z-index: 1000; 
-        }
-        
-        .nav-link { color: white; text-decoration: none; margin: 0 10px; font-weight: bold; font-size: 14px; text-transform: uppercase; }
-        .nav-link:hover { color: var(--primary); }
+        body { background: #0f0a00; color: #f4e4bc; font-family: 'Alice', serif; margin: 0; }
+        header { background: #1a1201; padding: 20px; text-align: center; border-bottom: 2px solid #007bff; }
+        h1 { font-family: 'Ruslan Display', cursive; color: #007bff; margin: 0; font-size: 35px; }
 
-        /* Жанрлар менюси - Мобилда суриладиган */
-        .genre-nav { 
-            display: flex; overflow-x: auto; white-space: nowrap; gap: 10px; 
-            padding: 15px; background: rgba(255,255,255,0.05);
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none; 
-        }
-        .genre-nav::-webkit-scrollbar { display: none; }
-        
-        .genre-btn { 
-            background: var(--glass); border: 1px solid rgba(255,255,255,0.2); color: white; 
-            padding: 10px 20px; border-radius: 25px; cursor: pointer; flex-shrink: 0;
-            font-size: 14px; transition: 0.3s;
-        }
-        .genre-btn.active { background: var(--primary); border-color: var(--primary); box-shadow: 0 0 15px rgba(255,106,0,0.4); }
+        .genre-nav { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 20px; background: #140d00; }
+        .genre-btn { background: none; border: 1px solid #007bff; color: #007bff; padding: 8px 15px; cursor: pointer; border-radius: 5px; transition: 0.3s; font-size: 14px; }
+        .genre-btn:hover, .genre-btn.active { background: #007bff; color: #fff; box-shadow: 0 0 10px rgba(0,123,255,0.5); }
 
-        /* Видео сеткаси */
-        .video-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            gap: 20px; padding: 20px; max-width: 1400px; margin: 0 auto; 
-        }
-
-        .movie-card { 
-            background: #1e293b; border-radius: 15px; overflow: hidden; 
-            border: 1px solid rgba(255,255,255,0.05); transition: transform 0.3s;
-            display: flex; flex-direction: column;
-        }
-        .movie-card:hover { transform: translateY(-5px); }
-        
-        .media-holder { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
-        .media-holder iframe, .media-holder img { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; object-fit: cover;
-        }
-
-        .movie-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .movie-title { font-size: 17px; font-weight: bold; margin: 8px 0; color: #fff; line-height: 1.4; }
-        .genre-tag { 
-            color: var(--primary); font-size: 12px; font-weight: bold; 
-            text-transform: uppercase; background: rgba(255,106,0,0.1); 
-            padding: 2px 8px; border-radius: 5px; width: fit-content;
-        }
-        .movie-meta { display: flex; justify-content: space-between; font-size: 12px; color: #64748b; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
-
-        #no-movies { text-align: center; padding: 100px 20px; color: #64748b; }
-
-        /* Мобил мослашув */
-        @media (max-width: 600px) {
-            .video-grid { grid-template-columns: 1fr; padding: 15px; }
-            .movie-title { font-size: 16px; }
-            header { padding: 12px; }
-        }
+        .cinema-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; padding: 30px; }
+        .video-card { background: #1a1201; border: 1px solid #007bff; border-radius: 10px; overflow: hidden; }
+        .video-container { width: 100%; height: 200px; background: #000; }
+        .video-container iframe { width: 100%; height: 100%; border: none; }
+        .card-info { padding: 15px; }
+        .card-info h3 { color: #007bff; margin: 0 0 10px 0; font-size: 18px; }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-size: 22px; font-weight: bold; color: var(--primary); margin-bottom: 12px;">
-        <i class="fas fa-rocket"></i> ЧОЙХОНА КИНО
-    </div>
-    <nav>
-        <a href="index.html" class="nav-link">УЙГА</a>
-        <a href="admin.html" class="nav-link">АДМИН</a>
-    </nav>
+    <h1>КИНOТЕАТР</h1>
 </header>
 
-<div class="genre-nav" id="genre-bar">
-    <button class="genre-btn active" onclick="filterMovies('all', this)">Ҳаммаси</button>
-    <button class="genre-btn" onclick="filterMovies('action', this)">Боевик</button>
-    <button class="genre-btn" onclick="filterMovies('thriller', this)">Триллер</button>
-    <button class="genre-btn" onclick="filterMovies('detective', this)">Детектив</button>
-    <button class="genre-btn" onclick="filterMovies('retro-ссср', this)">Ретро СССР</button>
-    <button class="genre-btn" onclick="filterMovies('comedy', this)">Комедия</button>
-    <button class="genre-btn" onclick="filterMovies('fishing', this)">Балиқ ови</button>
+<div class="genre-nav">
+    <a href="index.html" class="genre-btn" style="text-decoration: none; background: #3d2602; border-color: #d4af37; color: #d4af37;">🏠 Асосий саҳифа</a>
+    
+    <button class="genre-btn active" onclick="loadMovies('all', event)">Ҳаммаси</button>
+    <button class="genre-btn" onclick="loadMovies('cinema_drama', event)">Драма</button>
+    <button class="genre-btn" onclick="loadMovies('cinema_triller', event)">Триллер</button>
+    <button class="genre-btn" onclick="loadMovies('cinema_komediya', event)">Комедия</button>
+    <button class="genre-btn" onclick="loadMovies('cinema_jangari', event)">Боевик</button>
+    <button class="genre-btn" onclick="loadMovies('cinema_fantastika', event)">Фантастика</button>
+    <button class="genre-btn" onclick="loadMovies('cinema_sarguzasht', event)">Приключения</button>
+    <button class="genre-btn" onclick="loadMovies('cinema_horror', event)">Ужас</button>
+    <button class="genre-btn" onclick="loadMovies('retro_uzbek', event)">Ўзбек Ретро</button>
+    <button class="genre-btn" onclick="loadMovies('retro_sssr', event)">СССР Ретро</button>
 </div>
 
-<div id="no-movies" style="display: none;">
-    <i class="fas fa-search fa-3x" style="margin-bottom: 15px; opacity: 0.5;"></i>
-    <p>Бу бўлимда ҳозирча видеолар йўқ...</p>
-</div>
-
-<div class="video-grid" id="movie-display"></div>
+<div class="cinema-grid" id="movie-list"></div>
 
 <script>
-    function renderMovies(filter = 'all') {
-        const display = document.getElementById('movie-display');
-        const noMovies = document.getElementById('no-movies');
-        const db = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
-        
-        display.innerHTML = "";
+    function home() {
+    window.location.href = "index.html";
+}
+    const firebaseConfig = {
+        apiKey: "AIzaSyB9knDUC93Z5nghmLh8OCzkOI_w9q4p1eY",
+        authDomain: "namanganchayhana.firebaseapp.com",
+        databaseURL: "https://namanganchayhana-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "namanganchayhana",
+        storageBucket: "namanganchayhana.firebasestorage.app",
+        messagingSenderId: "760810654853",
+        appId: "1:760810654853:web:f851116bc7a621e4c52dec"
+    };
 
-        // Филтрлаш: фақат танланган категорияни ёки ҳаммасини кўрсатиш
-        let items = db.filter(p => {
-            if (filter === 'all') return true;
-            return p.category === filter;
-        });
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-        if (items.length === 0) {
-            noMovies.style.display = 'block';
-        } else {
-            noMovies.style.display = 'none';
-            // Энг янгиларини биринчи чиқариш учун reverse()
-            items.slice().reverse().forEach(item => {
-                let mediaHTML = "";
-                
-                // YouTube видео бўлса
-                if (item.video) {
-                    mediaHTML = `
-                        <div class="media-holder">
-                            <iframe src="https://www.youtube.com/embed/${item.video}" allowfullscreen></iframe>
-                        </div>`;
-                } 
-                // Видео йўқ, фақат расм бўлса
-                else if (item.image) {
-                    mediaHTML = `
-                        <div class="media-holder">
-                            <img src="${item.image}" alt="poster">
-                        </div>`;
-                }
-                // На расм, на видео бўлса - стандарт плашка
-                else {
-                    mediaHTML = `<div class="media-holder" style="display:flex; align-items:center; justify-content:center; background:#000;">
-                                    <i class="fas fa-film fa-2x" style="color:#1e293b"></i>
-                                 </div>`;
-                }
+    function loadMovies(filter, event) {
+        const list = document.getElementById('movie-list');
+        list.innerHTML = "<p style='text-align:center; width:100%'>Кинолар қидирилмоқда... 🎬</p>";
 
-                display.innerHTML += `
-                    <div class="movie-card">
-                        ${mediaHTML}
-                        <div class="movie-info">
-                            <div>
-                                <div class="genre-tag">${item.category}</div>
-                                <div class="movie-title">${item.title}</div>
-                            </div>
-                            <div class="movie-meta">
-                                <span><i class="far fa-calendar-alt"></i> ${item.date ? item.date.split(',')[0] : 'Яқинда'}</span>
-                                <span><i class="far fa-clock"></i> 2026</span>
-                            </div>
-                        </div>
-                    </div>`;
-            });
-        }
-    }
-
-    function filterMovies(genre, btn) {
         document.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderMovies(genre);
+        if(event) event.target.classList.add('active');
+
+        db.ref('posts').once('value', (snapshot) => {
+            list.innerHTML = "";
+            let found = false;
+
+            snapshot.forEach((category) => {
+                // Агар 'all' бўлса ёки категория номи кино жанри бўлса
+                if (filter === 'all' || category.key === filter) {
+                    if(category.key.startsWith('cinema_') || category.key.startsWith('retro_')) {
+                        category.forEach((post) => {
+                            const data = post.val();
+                            found = true;
+                            list.innerHTML += `
+                                <div class="video-card">
+                                    <div class="video-container">${data.iframe}</div>
+                                    <div class="card-info">
+                                        <h3>${data.title}</h3>
+                                        <p style="font-size:14px; opacity:0.8">${data.text.substring(0, 100)}...</p>
+                                    </div>
+                                </div>`;
+                        });
+                    }
+                }
+            });
+            if(!found) list.innerHTML = "<p style='text-align:center; width:100%'>Ҳозирча бу бўлимда кино йўқ.</p>";
+        });
     }
 
-    // Саҳифа юкланганда ҳаммасини чиқариш
-    window.onload = () => renderMovies('all');
+    window.onload = () => loadMovies('all');
 </script>
-
 </body>
 </html>

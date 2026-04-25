@@ -3,58 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="google-site-verification" content="lf0h1OWqEzgE9H9Y4Kmp4Ij-EJRjDyLsZtpH0H87ihs" />
-    <title>Шеърият - Чойхона</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Шеърият Олами - Чойхона Блоги</title>
+    <link href="https://fonts.googleapis.com/css2?family=Alice&family=Ruslan+Display&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
-        :root { --primary: #8e44ad; --dark: #2c3e50; --bg: #fffaf0; }
-        body { font-family: 'Georgia', serif; background: var(--bg); margin: 0; }
-        header { background: var(--dark); padding: 15px; text-align: center; font-family: sans-serif; }
-        .nav-btn { color: white; text-decoration: none; padding: 10px 15px; border-radius: 20px; font-size: 14px; margin: 0 5px; background: rgba(255,255,255,0.1); }
-        .nav-btn.active { background: var(--primary); }
-        
-        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
-        .poem-card { background: white; padding: 40px; border-radius: 10px; border-left: 8px solid var(--primary); margin-bottom: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .poem-title { color: var(--primary); font-size: 24px; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .poem-text { white-space: pre-line; line-height: 2; font-size: 18px; font-style: italic; color: #34495e; }
+        :root { --gold: #d4af37; --bg: #1a0f00; --card: #2c1a01; --text: #f4e4bc; }
+        body { background: var(--bg); color: var(--text); font-family: 'Alice', serif; margin: 0; padding: 0; }
+
+        /* ТЕПАДАГИ МЕНЮ (ҚОТИРИЛГАН) */
+        header { 
+            background: var(--card); 
+            padding: 15px 0; 
+            border-bottom: 2px solid var(--gold); 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000;
+        }
+        .nav-container { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        .nav-link { color: var(--text); text-decoration: none; font-weight: bold; padding: 8px 18px; border-radius: 20px; transition: 0.3s; font-size: 14px; border: 1px solid transparent; }
+        .nav-link:hover { color: var(--gold); border-color: var(--gold); }
+        .active-link { background: var(--gold); color: #1a0f00; }
+
+        /* ШЕЪРИЯТ КОНТЕЙНЕРИ */
+        .poetry-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .page-title { font-family: 'Ruslan Display', cursive; text-align: center; color: var(--gold); font-size: clamp(28px, 5vw, 40px); margin-bottom: 10px; }
+        .page-subtitle { text-align: center; opacity: 0.7; font-style: italic; margin-bottom: 50px; }
+
+        .poem-card { 
+            background: var(--card); 
+            border: 1px solid rgba(212, 175, 55, 0.3); 
+            border-radius: 15px; 
+            margin-bottom: 50px; 
+            padding: 40px 20px; 
+            text-align: center; /* Шеърлар учун марказлаштириш */
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        /* Шеърият безаги (Нақш) */
+        .poem-card::before { content: "❦"; color: var(--gold); font-size: 30px; display: block; margin-bottom: 20px; }
+        .poem-card::after { content: "❦"; color: var(--gold); font-size: 30px; display: block; margin-top: 20px; }
+
+        .poem-title { font-family: 'Ruslan Display', cursive; color: var(--gold); font-size: 28px; margin-bottom: 25px; }
+        .poem-content { 
+            line-height: 2; 
+            font-size: 20px; 
+            white-space: pre-line; /* Янги қаторларни сақлайди */
+            font-style: italic;
+            color: #fff;
+        }
+        .poem-image { width: 100%; max-height: 350px; object-fit: cover; border-radius: 10px; margin: 20px 0; border: 1px solid #3d2602; }
+        .poem-footer { font-size: 14px; color: var(--gold); margin-top: 20px; opacity: 0.6; }
+
+        .empty-msg { text-align: center; padding: 100px; font-size: 20px; opacity: 0.4; }
     </style>
 </head>
 <body>
 
 <header>
-    <a href="index.html" class="nav-btn">Асосий</a>
-    <a href="poetry.html" class="nav-btn active">Шеърият</a>
-    <a href="cooking.html" class="nav-btn">Таомлар</a>
-    <a href="radio.html" class="nav-btn">Радио</a>
+    <div class="nav-container">
+        <a href="index.html" class="nav-link">Асосий саҳифа</a>
+        <a href="health.html" class="nav-link">Саломатлик</a>
+        <a href="poetry.html" class="nav-link active-link">Шеърият</a>
+        <a href="cockes.html" class="nav-link">Ширин таомлар</a>
+        <a href="cinema.html" class="nav-link">Кинотеатр</a>
+        <a href="radio.html" class="nav-link">Радио</a>
+    </div>
 </header>
 
-<div class="container">
-    <h1 style="text-align: center; color: var(--primary); font-style: normal;"><i class="fas fa-feather-alt"></i> Шеърият Гульшани</h1>
-    <div id="poetry-feed"></div>
+<div class="poetry-container">
+    <h1 class="page-title">📜 ШЕЪРИЯТ ОЛАМИ</h1>
+    <p class="page-subtitle">Кўнгил қаъридан тўкилган дурлар...</p>
+    
+    <div id="poetry-list">
+        <p class="empty-msg">Илҳом парилари келмоқда... ⏳</p>
+    </div>
 </div>
 
 <script>
-    function loadPoetry() {
-        const posts = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
-        const feed = document.getElementById('poetry-feed');
-        const filtered = posts.filter(p => p.category === 'poetry');
+    const firebaseConfig = {
+        apiKey: "AIzaSyB9knDUC93Z5nghmLh8OCzkOI_w9q4p1eY",
+        authDomain: "namanganchayhana.firebaseapp.com",
+        databaseURL: "https://namanganchayhana-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "namanganchayhana",
+        storageBucket: "namanganchayhana.firebasestorage.app",
+        messagingSenderId: "760810654853",
+        appId: "1:760810654853:web:f851116bc7a621e4c52dec"
+    };
 
-        if(filtered.length === 0) {
-            feed.innerHTML = "<p style='text-align:center;'>Бу ерда шеърлар тез орада пайдо бўлади.</p>";
-            return;
-        }
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-        feed.innerHTML = "";
-        filtered.reverse().forEach(p => {
-            feed.innerHTML += `
-                <div class="poem-card">
-                    <div class="poem-title">${p.title}</div>
-                    <div class="poem-text">${p.content}</div>
-                    <p style="margin-top:20px; font-size:12px; color:#999; font-family:sans-serif;">Сана: ${p.date}</p>
-                </div>`;
+    function fetchPoetry() {
+        const box = document.getElementById('poetry-list');
+        
+        // Firebase базасидаги 'posts/poetry' бўлимидан ўқиймиз
+        db.ref('posts/poetry').on('value', (snapshot) => {
+            box.innerHTML = "";
+            let count = 0;
+
+            snapshot.forEach((child) => {
+                count++;
+                const data = child.val();
+                const imgHtml = data.image ? `<img src="${data.image}" class="poem-image">` : "";
+
+                box.innerHTML = `
+                    <article class="poem-card">
+                        <h2 class="poem-title">${data.title}</h2>
+                        ${imgHtml}
+                        <div class="poem-content">${data.text}</div>
+                        <div class="poem-footer">🗓 ${data.time || 'Битиклар вақти'}</div>
+                    </article>
+                ` + box.innerHTML; 
+            });
+
+            if(count === 0) {
+                box.innerHTML = "<p class='empty-msg'>Ҳозирча бу гўшада шеърлар йўқ. <br><br> Админдан биринчи шеърни юборинг!</p>";
+            }
         });
     }
-    window.onload = loadPoetry;
+
+    window.onload = fetchPoetry;
 </script>
+
 </body>
 </html>

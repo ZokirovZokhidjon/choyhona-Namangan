@@ -3,128 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="lf0h1OWqEzgE9H9Y4Kmp4Ij-EJRjDyLsZtpH0H87ihs" />
-    <title>Ширин таомлар - Чойхона Кулинарияси</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Ширин таомлар - Чойхона</title>
+    <link href="https://fonts.googleapis.com/css2?family=Alice&family=Ruslan+Display&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
-        :root { --cooking-color: #e67e22; --dark: #2c3e50; }
-        body { 
-            background: #fdf2e9; margin: 0; padding: 0; 
-            font-family: 'Segoe UI', sans-serif; text-align: center; 
-        }
-        
-        header { 
-            background: var(--cooking-color); color: white; padding: 40px 20px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative;
-        }
-        
-        .back-btn { 
-            position: absolute; top: 20px; left: 20px; color: white; 
-            text-decoration: none; font-weight: bold; border: 2px solid white; 
-            padding: 8px 15px; border-radius: 20px; transition: 0.3s; font-size: 14px;
-        }
-        .back-btn:hover { background: white; color: var(--cooking-color); }
+        :root { --gold: #d4af37; --bg: #1a0f00; --card: #2c1a01; }
+        body { background: var(--bg); color: #f4e4bc; font-family: 'Alice', serif; margin: 0; }
 
-        .container { max-width: 900px; margin: 30px auto; padding: 0 15px; }
+        header { background: var(--card); padding: 15px 0; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
+        .nav-container { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        .nav-link { color: #f4e4bc; text-decoration: none; font-weight: bold; padding: 8px 18px; border-radius: 20px; font-size: 14px; }
+        .active-link { background: var(--gold); color: #1a0f00; }
 
-        /* Рецепт карточкаси */
-        .recipe-card { 
-            background: white; border-radius: 20px; overflow: hidden; 
-            margin-bottom: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); 
-            text-align: left; transition: 0.3s;
-        }
-        .recipe-card:hover { transform: translateY(-5px); }
-        .recipe-body { padding: 25px; }
-        .recipe-badge { 
-            background: var(--cooking-color); color: white; 
-            padding: 5px 15px; border-radius: 15px; font-size: 12px; font-weight: bold; 
-        }
-        .recipe-title { margin: 15px 0; color: var(--dark); font-size: 26px; }
-        .recipe-text { color: #555; line-height: 1.8; font-size: 17px; white-space: pre-line; }
+        .main-wrapper { display: flex; max-width: 1200px; margin: 30px auto; gap: 30px; padding: 0 20px; }
+
+        /* ЧАП ТОМОН - МАҚОЛА КЎРИНАДИГАН ЖОЙ */
+        .content-area { flex: 3; min-height: 500px; }
         
-        /* Видео учун махсус услуб */
-        .video-box { 
-            margin-top: 20px; border-radius: 15px; overflow: hidden; 
-            background: #000; position: relative; padding-bottom: 56.25%; height: 0; 
+        .recipe-display { 
+            background: var(--card); 
+            border-radius: 15px; 
+            overflow: hidden; 
+            border: 1px solid var(--gold);
+            animation: fadeIn 0.5s ease;
         }
-        .video-box iframe { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; 
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .recipe-img { width: 100%; max-height: 450px; object-fit: cover; }
+        .recipe-info { padding: 30px; }
+        .recipe-info h2 { font-family: 'Ruslan Display', cursive; color: var(--gold); font-size: 32px; margin-top: 0; }
+        .recipe-text { line-height: 1.8; font-size: 20px; white-space: pre-line; }
+
+        /* ЎНГ ТОМОН - SIDEBAR РЎЙХАТИ */
+        .sidebar-area { flex: 1; min-width: 280px; }
+        .sidebar-widget { 
+            background: var(--card); 
+            border: 1px solid var(--gold); 
+            border-radius: 10px; 
+            padding: 20px; 
+            position: sticky; 
+            top: 90px; 
         }
+        .widget-h3 { font-family: 'Ruslan Display', cursive; color: var(--gold); text-align: center; border-bottom: 1px solid var(--gold); padding-bottom: 10px; margin-bottom: 15px; }
         
-        .empty-msg { padding: 50px; background: white; border-radius: 20px; color: #777; }
+        .sidebar-nav { list-style: none; padding: 0; }
+        .sidebar-nav li { margin-bottom: 10px; }
+        .sidebar-nav button { 
+            background: none; border: none; color: #f4e4bc; font-family: 'Alice', serif;
+            font-size: 16px; text-align: left; cursor: pointer; transition: 0.3s;
+            width: 100%; padding: 10px; border-radius: 5px; border-left: 3px solid transparent;
+        }
+        .sidebar-nav button:hover { background: rgba(212, 175, 55, 0.1); color: var(--gold); border-left-color: var(--gold); }
+        .sidebar-nav button.active-item { background: rgba(212, 175, 55, 0.2); color: var(--gold); border-left-color: var(--gold); font-weight: bold; }
+
+        @media (max-width: 850px) { .main-wrapper { flex-direction: column-reverse; } .sidebar-area { width: 100%; } }
     </style>
 </head>
 <body>
 
 <header>
-    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Асосий саҳифа</a>
-    <i class="fas fa-utensils fa-3x"></i>
-    <h1>ПАҲ-ПАҲ, ШИРИН ТАОМЛАР!</h1>
-    <p>Энг сара рецептлар ва кулинария сирлари</p>
+    <div class="nav-container">
+        <a href="index.html" class="nav-link">Асосий саҳифа</a>
+        <a href="health.html" class="nav-link">Саломатлик</a>
+        <a href="poetry.html" class="nav-link">Шеърият</a>
+        <a href="cockes.html" class="nav-link active-link">Ширин таомлар</a>
+        <a href="radio.html" class="nav-link">Радио</a>
+    </div>
 </header>
 
-<div class="container" id="cooking-feed">
-    <div class="empty-msg">
-        <i class="fas fa-spinner fa-spin fa-2x"></i>
-        <p>Юкланмоқда...</p>
-    </div>
+<div class="main-wrapper">
+    <main class="content-area" id="main-view">
+        <div class="recipe-display" style="padding: 50px; text-align: center;">
+            <h2 style="color: var(--gold);">🍲 Чойхона Ошхонаси</h2>
+            <p>Ўнг томондаги рўйхатдан бирор таомни танланг...</p>
+        </div>
+    </main>
+
+    <aside class="sidebar-area">
+        <div class="sidebar-widget">
+            <h3 class="widget-h3">📜 МЕНЮ</h3>
+            <div id="links-list" class="sidebar-nav">
+                </div>
+        </div>
+    </aside>
 </div>
 
 <script>
-    function loadCookingPosts() {
-        // 1. Маълумотларни базадан (localStorage) оламиз
-        const posts = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
-        const feed = document.getElementById('cooking-feed');
-        
-        // 2. Фақат 'cooking' (Ширин таомлар) бўлимига тегишлиларини ажратамиз
-        const cookingPosts = posts.filter(p => p.category === 'cooking');
+    const firebaseConfig = {
+        apiKey: "AIzaSyB9knDUC93Z5nghmLh8OCzkOI_w9q4p1eY",
+        authDomain: "namanganchayhana.firebaseapp.com",
+        databaseURL: "https://namanganchayhana-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "namanganchayhana",
+        storageBucket: "namanganchayhana.firebasestorage.app",
+        messagingSenderId: "760810654853",
+        appId: "1:760810654853:web:f851116bc7a621e4c52dec"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-        if (cookingPosts.length === 0) {
-            feed.innerHTML = `
-                <div class="empty-msg">
-                    <i class="fas fa-cookie-bite fa-4x" style="color: #ddd; margin-bottom: 20px;"></i>
-                    <h3>Ҳозирча рецептлар йўқ.</h3>
-                    <p>Админ панелдан "Ширин таомлар" бўлимига мақола қўшинг.</p>
-                </div>`;
-            return;
-        }
+    let allPosts = {}; // Маълумотларни вақтинча сақлаш учун
 
-        // 3. Мақолаларни экранга чиқарамиз (янгилари тепада туради)
-        feed.innerHTML = "";
-        cookingPosts.reverse().forEach(post => {
-            
-            // Видео бор-йўқлигини текширамиз
-            let videoHTML = "";
-            if (post.video && post.video.trim() !== "") {
-                videoHTML = `
-                    <div class="video-box">
-                        <iframe src="https://www.youtube.com/embed/${post.video}" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                allowfullscreen>
-                        </iframe>
-                    </div>`;
+    function initPage() {
+        const linksBox = document.getElementById('links-list');
+
+        db.ref('posts/cockes').on('value', (snapshot) => {
+            linksBox.innerHTML = "";
+            let firstKey = null;
+
+            snapshot.forEach((child) => {
+                const data = child.val();
+                const key = child.key;
+                allPosts[key] = data; // Маълумотни хотирага оламиз
+                if(!firstKey) firstKey = key;
+
+                // Ўнг томон учун тугма яратамиз
+                linksBox.innerHTML = `
+                    <li>
+                        <button onclick="showPost('${key}', this)">
+                           ● ${data.title}
+                        </button>
+                    </li>
+                ` + linksBox.innerHTML;
+            });
+
+            // Саҳифа очилганда биринчи мақолани автоматик кўрсатиш
+            if(firstKey) {
+                const firstBtn = linksBox.querySelector('button');
+                showPost(firstKey, firstBtn);
             }
-
-            feed.innerHTML += `
-                <div class="recipe-card">
-                    <div class="recipe-body">
-                        <span class="recipe-badge"><i class="fas fa-fire"></i> РЕЦЕПТ</span>
-                        <h2 class="recipe-title">${post.title}</h2>
-                        <div class="recipe-text">${post.content}</div>
-                        ${videoHTML}
-                        <hr style="margin-top:20px; border: 0; border-top: 1px solid #eee;">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <small style="color: #999;"><i class="far fa-clock"></i> ${post.date}</small>
-                            <i class="fas fa-share-alt" style="color: var(--cooking-color); cursor:pointer;"></i>
-                        </div>
-                    </div>
-                </div>
-            `;
         });
     }
 
-    // Саҳифа юкланиши билан функцияни ишга туширамиз
-    window.onload = loadCookingPosts;
+    function showPost(key, btnElement) {
+        const display = document.getElementById('main-view');
+        const data = allPosts[key];
+
+        // Тугмалар стилини янгилаш
+        document.querySelectorAll('.sidebar-nav button').forEach(b => b.className = "");
+        if(btnElement) btnElement.className = "active-item";
+
+        // Чап томонни янгилаш
+        const imgHtml = data.image ? `<img src="${data.image}" class="recipe-img">` : "";
+        const videoHtml = data.iframe ? `<div class="video-wrapper">${data.iframe}</div>` : "";
+
+        display.innerHTML = `
+            <div class="recipe-display">
+                ${videoHtml}
+                ${imgHtml}
+                <div class="recipe-info">
+                    <h2>${data.title}</h2>
+                    <div class="recipe-text">${data.text}</div>
+                    <p style="margin-top:20px; font-size:12px; opacity:0.5;">🗓 Сана: ${data.time || ''}</p>
+                </div>
+            </div>
+        `;
+        
+        // Тепага сирпаниб чиқиш (мобил учун қулай)
+        if(window.innerWidth < 850) {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+    }
+
+    window.onload = initPage;
 </script>
 
 </body>

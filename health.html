@@ -3,88 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="lf0h1OWqEzgE9H9Y4Kmp4Ij-EJRjDyLsZtpH0H87ihs" />
-    <title>Саломатлик - Чойхона</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Саломатлик - Чойхона Блоги</title>
+    <link href="https://fonts.googleapis.com/css2?family=Alice&family=Ruslan+Display&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
-        :root { --primary: #27ae60; --dark: #2c3e50; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; }
-        header { background: var(--dark); padding: 15px; text-align: center; position: sticky; top: 0; z-index: 1000; }
-        .nav-btn { color: white; text-decoration: none; padding: 10px 15px; border-radius: 20px; font-size: 14px; margin: 0 5px; background: rgba(255,255,255,0.1); }
-        .nav-btn.active { background: var(--primary); }
-        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
-        .health-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
-        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-top: 5px solid var(--primary); }
-        .card-content { padding: 20px; }
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); overflow-y: auto; }
-        .modal-content { background: white; margin: 5% auto; padding: 25px; width: 90%; max-width: 700px; border-radius: 20px; position: relative; }
+        :root { --gold: #d4af37; --bg: #1a0f00; --card: #2c1a01; }
+        body { background: var(--bg); color: #f4e4bc; font-family: 'Alice', serif; margin: 0; padding: 0; }
+
+        /* ТЕПАДАГИ МЕНЮ - ҚОТИРИЛГАН (STICKY) */
+        header { 
+            background: var(--card); 
+            padding: 15px 0; 
+            border-bottom: 2px solid var(--gold); 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000;
+        }
+        .nav-container { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        .nav-link { color: #f4e4bc; text-decoration: none; font-weight: bold; padding: 8px 15px; border: 1px solid transparent; transition: 0.3s; border-radius: 20px; font-size: 14px; }
+        .nav-link:hover { border-color: var(--gold); color: var(--gold); }
+        .active-link { background: var(--gold); color: #1a0f00; }
+
+        /* БЛОГ УСЛУБИДАГИ КОНТЕНТ */
+        .blog-container { max-width: 800px; margin: 30px auto; padding: 0 15px; }
+        .page-title { font-family: 'Ruslan Display', cursive; text-align: center; color: var(--gold); font-size: 32px; margin-bottom: 40px; }
+
+        .blog-post { 
+            background: var(--card); 
+            border-radius: 12px; 
+            margin-bottom: 40px; 
+            overflow: hidden; 
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        }
+        .blog-post img { width: 100%; max-height: 400px; object-fit: cover; }
+        .post-content { padding: 25px; }
+        .post-content h2 { font-family: 'Ruslan Display', cursive; color: var(--gold); margin: 0 0 15px 0; font-size: 26px; }
+        .post-text { line-height: 1.8; font-size: 18px; color: #f4e4bc; white-space: pre-line; }
+        .post-date { font-size: 12px; color: #8a7a50; margin-top: 20px; border-top: 1px solid #3d2602; padding-top: 10px; }
+
+        /* Агар мақола бўлмаса */
+        .empty-msg { text-align: center; padding: 50px; font-size: 20px; opacity: 0.5; }
     </style>
 </head>
 <body>
 
 <header>
-    <a href="index.html" class="nav-btn">Асосий</a>
-    <a href="health.html" class="nav-btn active">Саломатлик</a>
-    <a href="poetry.html" class="nav-btn">Шеърият</a>
-    <a href="radio.html" class="nav-btn">Радио</a>
+    <div class="nav-container">
+        <a href="index.html" class="nav-link">Асосий саҳифа</a>
+        <a href="health.html" class="nav-link active-link">Саломатлик</a>
+        <a href="poetry.html" class="nav-link">Шеърият</a>
+        <a href="cockes.html" class="nav-link">Ширин таомлар</a>
+        <a href="cinema.html" class="nav-link">Кинотеатр</a>
+        <a href="radio.html" class="nav-link">Радио</a>
+    </div>
 </header>
 
-<div class="container">
-    <h1 style="text-align: center; color: var(--primary);"><i class="fas fa-heartbeat"></i> Саломатлик бурчаги</h1>
-    <div class="health-grid" id="health-feed"></div>
-</div>
-
-<div id="hModal" class="modal">
-    <div class="modal-content">
-        <span style="position:absolute; right:20px; top:10px; font-size:30px; cursor:pointer;" onclick="closeH()">&times;</span>
-        <div id="hBody"></div>
+<div class="blog-container">
+    <h1 class="page-title">🌿 САЛОМАТЛИК БЛОГИ</h1>
+    <div id="blog-posts">
+        <p class="empty-msg">Маълумот юкланмоқда... ⏳</p>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
+    const firebaseConfig = {
+        apiKey: "AIzaSyB9knDUC93Z5nghmLh8OCzkOI_w9q4p1eY",
+        authDomain: "namanganchayhana.firebaseapp.com",
+        databaseURL: "https://namanganchayhana-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "namanganchayhana",
+        storageBucket: "namanganchayhana.firebasestorage.app",
+        messagingSenderId: "760810654853",
+        appId: "1:760810654853:web:f851116bc7a621e4c52dec"
+    };
 
-    function loadHealth() {
-        const feed = document.getElementById('health-feed');
-        const filtered = db.filter(p => p.category === 'health');
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-        if(filtered.length === 0) {
-            feed.innerHTML = "<p>Ҳозирча мақолалар йўқ.</p>";
-            return;
-        }
+    // Мақолаларни чиқариш
+    function fetchHealthPosts() {
+        const blogBox = document.getElementById('blog-posts');
+        
+        // ДИҚҚАТ: 'health' категориясини базадан ўқиймиз
+        db.ref('posts/health').on('value', (snapshot) => {
+            blogBox.innerHTML = "";
+            let count = 0;
 
-        feed.innerHTML = "";
-        filtered.reverse().forEach(p => {
-            let media = p.video ? 
-                `<div style="background:#000; height:200px; display:flex; align-items:center; justify-content:center; color:white;"><i class="fas fa-play-circle fa-3x"></i></div>` : 
-                `<img src="${p.image || 'https://via.placeholder.com/400x200'}" style="width:100%; height:200px; object-fit:cover;">`;
+            snapshot.forEach((child) => {
+                count++;
+                const data = child.val();
+                
+                const imgHtml = data.image ? `<img src="${data.image}" alt="rasm">` : "";
+                const videoHtml = data.iframe ? `<div style="margin:15px 0;">${data.iframe}</div>` : "";
 
-            feed.innerHTML += `
-                <div class="card" onclick="openH(${db.indexOf(p)})" style="cursor:pointer;">
-                    ${media}
-                    <div class="card-content">
-                        <h3>${p.title}</h3>
-                        <p style="font-size:14px; color:#666;">${p.content.substring(0, 100)}...</p>
-                    </div>
-                </div>`;
+                blogBox.innerHTML = `
+                    <article class="blog-post">
+                        ${imgHtml}
+                        <div class="post-content">
+                            <h2>${data.title}</h2>
+                            <div class="post-text">${data.text}</div>
+                            ${videoHtml}
+                            <div class="post-date">🗓 Юборилган вақт: ${data.time || 'Номаълум'}</div>
+                        </div>
+                    </article>
+                ` + blogBox.innerHTML; 
+            });
+
+            if(count === 0) {
+                blogBox.innerHTML = "<p class='empty-msg'>Бу бўлимда ҳозирча мақолалар йўқ. <br><br> Админ панелдан 'Саломатлик' бўлимини танлаб мақола юборинг.</p>";
+            }
         });
     }
 
-    function openH(index) {
-        const p = db[index];
-        const body = document.getElementById('hBody');
-        let media = p.video ? 
-            `<div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:10px;">
-                <iframe src="https://www.youtube.com/embed/${p.video}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen></iframe>
-            </div>` : 
-            `<img src="${p.image}" style="width:100%; border-radius:10px; margin-bottom:15px;">`;
-
-        body.innerHTML = `<h2>${p.title}</h2>${media}<p style="margin-top:15px; line-height:1.6; white-space:pre-wrap;">${p.content}</p>`;
-        document.getElementById('hModal').style.display = 'block';
-    }
-
-    function closeH() { document.getElementById('hModal').style.display = 'none'; }
-    window.onload = loadHealth;
+    window.onload = fetchHealthPosts;
 </script>
+
 </body>
 </html>

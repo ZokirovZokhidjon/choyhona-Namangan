@@ -2,291 +2,219 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Чойхона - Professional Admin v2.0</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ Панел - Бошқарув</title>
+    <link href="https://fonts.googleapis.com/css2?family=Alice&family=Ruslan+Display&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
-        :root { 
-            --neon: #00d4ff; --gold: #ff6a00; --bg: #0b0f1a; --glass: rgba(255,255,255,0.05);
-        }
-
-        body { 
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: radial-gradient(circle at center, #1a2333 0%, #0b0f1a 100%);
-            color: white; margin: 0; padding-bottom: 50px; min-height: 100vh;
-        }
-
-        /* HEADER & LOGO SECTION */
-        header {
-            background: rgba(11, 15, 26, 0.8);
-            backdrop-filter: blur(15px);
-            padding: 15px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px solid var(--neon);
-            position: sticky; top: 0; z-index: 1000;
-        }
-
-        .logo-box { display: flex; align-items: center; gap: 10px; }
-        .logo-box img { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--neon); }
-
-        /* MAIN PANEL */
-        .wrapper { max-width: 1200px; margin: 0 auto; padding: 15px; }
+        body { background: #0f0a00; color: #f4e4bc; font-family: 'Alice', serif; margin: 0; padding: 0; }
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; justify-content: center; align-items: center; z-index: 10000; }
+        .login-box { background: #1a1201; padding: 40px; border: 2px solid #007bff; border-radius: 15px; text-align: center; width: 320px; }
+        #admin-content { display: none; }
         
-        .main-panel { 
-            display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; 
-        }
-
-        .glass-box {
-            background: var(--glass);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 25px; padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        h2 { font-size: 1.2rem; color: var(--neon); margin-top: 0; display: flex; align-items: center; gap: 10px; }
-
-        /* INPUTS & SELECTS */
-        .input-group { margin-bottom: 15px; }
-        label { display: block; font-size: 12px; color: #888; margin: 0 0 5px 10px; }
+        .nav-bar { background: #1a1201; padding: 15px; border-bottom: 2px solid #007bff; display: flex; justify-content: space-around; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .nav-bar a { color: #007bff; text-decoration: none; font-weight: bold; }
         
-        input, select, textarea {
-            width: 100%; padding: 14px; border-radius: 15px;
-            background: rgba(0,0,0,0.4); border: 1px solid #2d3748;
-            color: white; font-size: 16px; box-sizing: border-box;
-            outline: none; transition: 0.3s;
-        }
-
-        input:focus, select:focus { border-color: var(--neon); box-shadow: 0 0 15px rgba(0,212,255,0.2); }
-
-        .btn-neon {
-            width: 100%; padding: 16px; border-radius: 15px; border: none;
-            background: linear-gradient(45deg, var(--neon), #0055ff);
-            color: white; font-weight: bold; font-size: 16px; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 1px; margin-top: 10px;
-        }
-
-        /* DATA LIST - КАРТОЧКАЛАР */
-        #posts-list { display: flex; flex-direction: column; gap: 15px; }
+        .container { max-width: 1200px; margin: 25px auto; padding: 0 20px; }
+        .editor-box { background: #1a1201; padding: 30px; border-radius: 15px; border: 1px solid #007bff; margin-bottom: 40px; }
         
-        .post-card {
-            background: rgba(255,255,255,0.03);
-            border-radius: 20px; padding: 15px;
-            border-left: 4px solid var(--neon);
-            animation: slideIn 0.5s ease forwards;
-        }
+        h2 { color: #007bff; font-family: 'Ruslan Display', cursive; text-align: center; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #007bff; color: #fff; border-radius: 6px; box-sizing: border-box; }
+        
+        .btn-blue { background: #007bff; color: #fff; border: none; padding: 12px 20px; font-weight: bold; cursor: pointer; border-radius: 6px; transition: 0.3s; }
+        .btn-blue:hover { background: #0056b3; }
+        .btn-danger { background: #ff4d4d; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        .btn-edit { background: #ffc107; color: black; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-right: 5px; }
 
-        @keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
-
-        .card-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .card-title { font-weight: bold; color: var(--neon); font-size: 16px; }
-        .card-cat { font-size: 10px; background: var(--gold); color: black; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
-
-        .card-actions { display: flex; gap: 20px; border-top: 1px solid #2d3748; padding-top: 10px; margin-top: 10px; }
-        .btn-action { background: none; border: none; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px; }
-
-        /* МОБИЛ СОЗЛАМА */
-        @media (max-width: 900px) {
-            .main-panel { grid-template-columns: 1fr; }
-            header h3 { font-size: 16px; }
-        }
-
-        /* ЛОГИН */
-        #login-screen {
-            position: fixed; inset: 0; background: #0b0f1a;
-            display: flex; justify-content: center; align-items: center; z-index: 2000;
-        }
+        /* Постлар жадвали */
+        .post-manager { background: #1a1201; border: 1px solid #007bff; border-radius: 15px; padding: 20px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border-bottom: 1px solid #3d2602; padding: 12px; text-align: left; }
+        th { color: #007bff; }
+        .cat-badge { background: #3d2602; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
     </style>
 </head>
 <body>
 
-<div id="login-screen">
-    <div class="glass-box" style="width: 320px; text-align: center; border: 2px solid var(--neon);">
-        <div style="font-size: 40px; margin-bottom: 10px;">🛡️</div>
-        <h2>COMMAND CENTER</h2>
-        <input type="text" id="user" placeholder="Логин" style="margin-bottom: 10px;">
-        <input type="password" id="pass" placeholder="Пароль">
-        <button class="btn-neon" onclick="auth()">AUTHENTICATION</button>
+<div id="login-overlay">
+    <div class="login-box">
+        <h2 style="color:#007bff;">🔒 КИРИШ</h2>
+        <input type="password" id="passInput" placeholder="Паролни ёзинг...">
+        <button class="btn-blue" style="width:100%" onclick="verify()">КИРИШ</button>
     </div>
 </div>
 
-<div id="admin-app" style="display: none;">
-    <header>
-        <div class="logo-box">
-            <img src="log.webp" alt="L1"> <h3 style="margin: 0; font-size: 18px;">ЧОЙХОНА <span style="color:var(--gold)">PRO</span></h3>
+<div id="admin-content">
+    <div class="nav-bar">
+        <a href="index.html">🏠 САЙТГА ЎТИШ</a>
+        <h3 style="margin:0; color:#007bff;">Admin Panel</h3>
+        <button onclick="logout()" style="background:none; border:1px solid #ff4d4d; color:#ff4d4d; cursor:pointer; padding:5px 15px; border-radius:5px;">ЧИҚИШ</button>
+    </div>
+
+    <div class="container">
+        <div class="editor-box" id="form-section">
+            <h2 id="form-title">ЯНГИ МАЪЛУМОТ ЮБОРИШ</h2>
+            <input type="hidden" id="edit-id">
+            <input type="hidden" id="edit-cat">
+
+            <input type="text" id="title" placeholder="Сарлавҳа...">
+            <select id="category">
+                <option value="">-- Бўлимни танланг --</option>
+                <option value="main">🏠 Асосий саҳифа</option>
+                <option value="health">🌿 Саломатлик</option>
+                <option value="poetry">📜 Шеърият</option>
+                <option value="cockes">🍲 Ширин таомлар</option>
+                <optgroup label="🎬 Кинотеатр">
+                    <option value="cinema_drama">🎭 Драма</option>
+                    <option value="cinema_triller">🔪 Триллер</option>
+                    <option value="cinema_komediya">😂 Комедия</option>
+                    <option value="cinema_jangari">👊 Боевик</option>
+                    <option value="cinema_fantastika">👽 Фантастика</option>
+                    <option value="cinema_horror">👻 Ужас</option>
+                    <option value="retro_uzbek">🎥 Ўзбек Ретро</option>
+                    <option value="retro_sssr">🚩 СССР Ретро</option>
+                </optgroup>
+            </select>
+            <input type="text" id="imgUrl" placeholder="Расм линки...">
+            <textarea id="videoIframe" rows="3" placeholder="Embed код (<iframe>)..."></textarea>
+            <textarea id="textContent" rows="6" placeholder="Матн..."></textarea>
+            
+            <button class="btn-blue" id="submitBtn" onclick="saveData()" style="width:100%">🚀 САЙТГА ЮБОРИШ</button>
+            <button class="btn-danger" id="cancelBtn" onclick="resetForm()" style="width:100%; margin-top:10px; display:none;">БЕКОР ҚИЛИШ</button>
         </div>
-        <div class="logo-box">
-            <button onclick="logout()" style="background:none; border:none; color:#ff4757; cursor:pointer;"><i class="fas fa-sign-out-alt fa-lg"></i></button>
-            <img src="logo.webp" alt="L2"> </div>
-    </header>
 
-    <div class="wrapper">
-        <div class="main-panel">
-            <div class="glass-box">
-                <h2><i class="fas fa-cloud-upload-alt"></i> ЯНГИ КОНТЕНТ</h2>
-                
-                <div class="input-group">
-                    <label>Мавзу / Сарлавҳа</label>
-                    <input type="text" id="p-title" placeholder="Масалан: Янги детектив кино">
-                </div>
-
-                <div class="input-group">
-                    <label>Саҳифани танланг (Dropdown)</label>
-                    <select id="p-cat">
-                        <option value="main">🏠 Асосий саҳифа</option>
-                        <option value="news">📰 Янгиликлар</option>
-                        <option value="cockes">🍲 Ширин таомлар</option>
-                        <option value="classic">🎵 Мумтоз наволар</option>
-                        <option value="poetry">✍️ Шеърият</option>
-                        <option value="health">🩺 Саломатлик</option>
-                        <optgroup label="🎬 КИНОТЕАТР">
-                            <option value="action">🔥 Боевик</option>
-                            <option value="detective">🕵️ Детектив</option>
-                            <option value="horror">👻 Қўрқинчли</option>
-                            <option value="drama">🎭 Драма</option>
-                            <option value="cinema">🎥 Барча кинолар</option>
-                        </optgroup>
-                    </select>
-                </div>
-
-                <div class="input-group">
-                    <label>YouTube ID ёки Расм линки</label>
-                    <div style="display: flex; gap: 5px;">
-                        <input type="text" id="p-video" placeholder="Video ID">
-                        <input type="text" id="p-img" placeholder="Image Link">
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label>Батафсил матн</label>
-                    <textarea id="p-text" rows="6" placeholder="Хабар матнини ёзинг..."></textarea>
-                </div>
-
-                <button class="btn-neon" id="save-btn" onclick="savePost()">БАЗАГА ЮБОРИШ</button>
-            </div>
-
-            <div class="glass-box">
-                <h2><i class="fas fa-database"></i> БУЛУТДАГИ МАЪЛУМОТЛАР</h2>
-                <div id="posts-list">
-                    <p style="text-align: center; color: #555;">Юкланмоқда...</p>
-                </div>
-            </div>
+        <div class="post-manager">
+            <h2>МАЪЛУМОТЛАРНИ БОШҚАРИШ</h2>
+            <table id="postsTable">
+                <thead>
+                    <tr>
+                        <th>Сарлавҳа</th>
+                        <th>Бўлим</th>
+                        <th>Вақти</th>
+                        <th>Амаллар</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    </tbody>
+            </table>
         </div>
     </div>
 </div>
 
 <script>
-    // Firebase Config - Сизники
+    const secret = "MTIzNA=="; // Пароль: 1234
     const firebaseConfig = {
-        apiKey: "AIzaSyDGW-7Yhgx7myEpz9rlzrbtExwb03tnszs",
-        authDomain: "chayhananamangan.firebaseapp.com",
-        projectId: "chayhananamangan",
-        storageBucket: "chayhananamangan.firebasestorage.app",
-        messagingSenderId: "600906823282",
-        appId: "1:600906823282:web:e6756453dcb3351ffe34eb"
+        apiKey: "AIzaSyB9knDUC93Z5nghmLh8OCzkOI_w9q4p1eY",
+        authDomain: "namanganchayhana.firebaseapp.com",
+        databaseURL: "https://namanganchayhana-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "namanganchayhana",
+        storageBucket: "namanganchayhana.firebasestorage.app",
+        messagingSenderId: "760810654853",
+        appId: "1:760810654853:web:f851116bc7a621e4c52dec"
     };
 
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    let currentEditId = null;
+    const db = firebase.database();
 
-    function auth() {
-        const u = document.getElementById('user').value;
-        const p = document.getElementById('pass').value;
-        if(u === "admin" && p === "7528") {
-            sessionStorage.setItem('isAdmin', 'true');
-            startApp();
-        } else { alert("Кириш тақиқланди!"); }
+    function verify() {
+        if (btoa(document.getElementById('passInput').value) === secret) {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('admin-content').style.display = 'block';
+            loadPosts();
+        } else { alert("Хато!"); }
     }
 
-    function startApp() {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('admin-app').style.display = 'block';
+    function logout() { location.reload(); }
+
+    // Маълумотни сақлаш (Янги ёки Таҳрирланган)
+    async function saveData() {
+        const id = document.getElementById('edit-id').value;
+        const oldCat = document.getElementById('edit-cat').value;
+        const title = document.getElementById('title').value;
+        const cat = document.getElementById('category').value;
+        const text = document.getElementById('textContent').value;
+        const img = document.getElementById('imgUrl').value;
+        const iframe = document.getElementById('videoIframe').value;
+
+        if(!title || !cat) return alert("Маълумотни тўлдиринг!");
+
+        const postData = { title, text, category: cat, image: img, iframe, time: new Date().toLocaleString() };
+
+        if(id) {
+            // Таҳрирлаш: агар категория ўзгарган бўлса эскисини ўчириб янгисига ёзади
+            if(oldCat !== cat) { await db.ref('posts/' + oldCat + '/' + id).remove(); }
+            await db.ref('posts/' + cat + '/' + id).set(postData);
+        } else {
+            // Янги қўшиш
+            await db.ref('posts/' + cat).push(postData);
+        }
+        resetForm();
         loadPosts();
     }
 
-    async function savePost() {
-        const title = document.getElementById('p-title').value;
-        const text = document.getElementById('p-text').value;
-        if(!title || !text) return alert("Маълумот тўлиқ эмас!");
-
-        const data = {
-            title: title,
-            content: text,
-            category: document.getElementById('p-cat').value,
-            video: document.getElementById('p-video').value,
-            image: document.getElementById('p-img').value,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            date: new Date().toLocaleString()
-        };
-
-        try {
-            if(currentEditId) {
-                await db.collection("posts").doc(currentEditId).update(data);
-                currentEditId = null;
-                document.getElementById('save-btn').innerText = "БАЗАГА ЮБОРИШ";
-            } else {
-                await db.collection("posts").add(data);
-            }
-            resetForm();
-        } catch (e) { alert("Хатолик: " + e); }
-    }
-
+    // Базадаги барча постларни жадвалга чиқариш
     function loadPosts() {
-        db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snap => {
-            const list = document.getElementById('posts-list');
-            list.innerHTML = "";
-            snap.forEach(doc => {
-                const p = doc.data();
-                list.innerHTML += `
-                    <div class="post-card">
-                        <div class="card-header">
-                            <span class="card-title">${p.title}</span>
-                            <span class="card-cat">${p.category}</span>
-                        </div>
-                        <div style="font-size: 12px; color: #888;">${p.date}</div>
-                        <div class="card-actions">
-                            <button class="btn-action" style="color:var(--neon)" onclick="editPost('${doc.id}', \`${p.title}\`, \`${p.category}\`, \`${p.video}\`, \`${p.image}\`, \`${p.content}\`)">
-                                <i class="fas fa-edit"></i> ТЎҒИРЛАШ
-                            </button>
-                            <button class="btn-action" style="color:#ff4757" onclick="deletePost('${doc.id}')">
-                                <i class="fas fa-trash"></i> ЎЧИРИШ
-                            </button>
-                        </div>
-                    </div>`;
+        db.ref('posts').on('value', (snapshot) => {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = "";
+            snapshot.forEach((category) => {
+                category.forEach((post) => {
+                    const data = post.val();
+                    const key = post.key;
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${data.title}</td>
+                            <td><span class="cat-badge">${category.key}</span></td>
+                            <td style="font-size:12px;">${data.time}</td>
+                            <td>
+                                <button class="btn-edit" onclick="editPost('${key}', '${category.key}')">✎</button>
+                                <button class="btn-danger" onclick="deletePost('${key}', '${category.key}')">🗑</button>
+                            </td>
+                        </tr>`;
+                });
             });
         });
     }
 
-    function editPost(id, t, c, v, i, txt) {
-        currentEditId = id;
-        document.getElementById('p-title').value = t;
-        document.getElementById('p-cat').value = c;
-        document.getElementById('p-video').value = v;
-        document.getElementById('p-img').value = i;
-        document.getElementById('p-text').value = txt;
-        document.getElementById('save-btn').innerText = "ЎЗГАРТИРИШНИ САҚЛАШ";
-        window.scrollTo({top: 0, behavior: 'smooth'});
+    // Ўчириш
+    async function deletePost(id, cat) {
+        if(confirm("Ростан ҳам ўчирмоқчимисиз?")) {
+            await db.ref('posts/' + cat + '/' + id).remove();
+        }
     }
 
-    async function deletePost(id) {
-        if(confirm("Бутунлай ўчирилсинми?")) await db.collection("posts").doc(id).delete();
+    // Таҳрирлаш учун формага юклаш
+    function editPost(id, cat) {
+        db.ref('posts/' + cat + '/' + id).once('value', (snap) => {
+            const data = snap.val();
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-cat').value = cat;
+            document.getElementById('title').value = data.title;
+            document.getElementById('category').value = cat;
+            document.getElementById('textContent').value = data.text;
+            document.getElementById('imgUrl').value = data.image;
+            document.getElementById('videoIframe').value = data.iframe;
+            
+            document.getElementById('form-title').innerText = "ТАҲРИРЛАШ РЕЖИМИ";
+            document.getElementById('submitBtn').innerText = "✅ ЎЗГАРИШНИ САҚЛАШ";
+            document.getElementById('cancelBtn').style.display = "block";
+            window.scrollTo(0,0);
+        });
     }
 
     function resetForm() {
-        document.getElementById('p-title').value = "";
-        document.getElementById('p-video').value = "";
-        document.getElementById('p-img').value = "";
-        document.getElementById('p-text').value = "";
+        document.getElementById('edit-id').value = "";
+        document.getElementById('edit-cat').value = "";
+        document.getElementById('title').value = "";
+        document.getElementById('textContent').value = "";
+        document.getElementById('imgUrl').value = "";
+        document.getElementById('videoIframe').value = "";
+        document.getElementById('form-title').innerText = "ЯНГИ МАЪЛУМОТ ЮБОРИШ";
+        document.getElementById('submitBtn').innerText = "🚀 САЙТГА ЮБОРИШ";
+        document.getElementById('cancelBtn').style.display = "none";
     }
-
-    function logout() { sessionStorage.clear(); location.reload(); }
-
-    window.onload = () => { if(sessionStorage.getItem('isAdmin')) startApp(); }
 </script>
 </body>
 </html>
