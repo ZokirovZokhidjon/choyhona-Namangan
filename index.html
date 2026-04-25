@@ -2,279 +2,157 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Чойхона Портали</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чойхона Пойтахт - Шарқона Портал</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        :root { 
-            --blue: #00d4ff; 
-            --orange: #ff6a00; 
-            --bg: #0f172a; 
-            --card: #1e293b; 
-            --text: #f8fafc;
-        }
-        
-        body { 
-            font-family: 'Segoe UI', Roboto, sans-serif; 
-            background: var(--bg); color: var(--text); 
-            margin: 0; padding: 0; overflow-x: hidden;
+        :root {
+            --gold: #d4af37;
+            --blue: #0a192f;
+            --orange: #ff6a00;
+            --glass: rgba(255, 255, 255, 0.05);
         }
 
-        /* Шапка ва Навигация */
+        body {
+            margin: 0; background: var(--blue); color: #e2e8f0;
+            font-family: 'Segoe UI', sans-serif;
+            background-image: url('https://www.transparenttextures.com/patterns/oriental-tiles.png');
+        }
+
+        /* --- HEADER & LOGOS --- */
         header {
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 2px solid var(--blue);
-            padding: 0 5%;
-            height: 75px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            background: rgba(10, 25, 47, 0.9); backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--gold);
+            padding: 10px 5%; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 1000;
         }
 
-        .logo { 
-            font-size: 24px; 
-            font-weight: 900; 
-            color: var(--blue); 
-            text-decoration: none;
-            letter-spacing: 1px;
+        .logo-box img { width: 45px; height: 45px; border-radius: 50%; border: 1px solid var(--gold); }
+
+        /* --- NAVIGATION --- */
+        .nav-menu { display: flex; gap: 15px; }
+        .nav-menu a {
+            color: white; text-decoration: none; font-size: 14px; font-weight: 500;
+            transition: 0.3s; padding: 5px 10px; border-radius: 8px;
+        }
+        .nav-menu a:hover, .nav-menu a.active { color: var(--gold); background: rgba(212, 175, 55, 0.1); }
+
+        /* МЕГA-МEНЮ (Мобил учун гамбургер) */
+        .menu-toggle { display: none; color: var(--gold); font-size: 24px; cursor: pointer; }
+
+        @media (max-width: 900px) {
+            .menu-toggle { display: block; }
+            .nav-menu {
+                display: none; /* Телефонда яшириш */
+                flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%;
+                background: #112240; border-bottom: 2px solid var(--gold); padding: 20px; box-sizing: border-box;
+            }
+            .nav-menu.active { display: flex; } /* Тугма босилганда чиқариш */
+            .nav-menu a { font-size: 18px; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         }
 
-        .nav-menu { display: flex; gap: 5px; }
+        /* --- КАРТОЧКАЛАР --- */
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+
+        .post-card {
+            background: var(--glass); border: 1px solid rgba(212, 175, 55, 0.1);
+            border-radius: 20px; overflow: hidden; transition: 0.4s; position: relative;
+        }
+        .post-card:hover { transform: translateY(-8px); border-color: var(--gold); }
+
+        .card-img { width: 100%; height: 180px; object-fit: cover; }
         
-        .nav-menu a { 
-            color: #cbd5e1; 
-            text-decoration: none; 
-            font-size: 13px; 
-            font-weight: bold;
-            padding: 10px 15px; 
-            border-radius: 12px; 
-            transition: 0.3s;
-            text-transform: uppercase;
-        }
-        
-        .nav-menu a:hover, .nav-menu a.active { 
-            background: rgba(0, 212, 255, 0.1); 
-            color: var(--blue); 
+        .tea-master {
+            position: absolute; top: 160px; right: 20px;
+            background: var(--gold); color: black; width: 45px; height: 45px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            border: 3px solid var(--blue); box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* Бургер меню */
-        .burger { 
-            display: none; 
-            font-size: 26px; 
-            cursor: pointer; 
-            color: var(--blue);
-        }
-
-        /* Контейнер ва Грит */
-        .container { 
-            padding: 30px 5%; 
-            max-width: 1300px; 
-            margin: 0 auto; 
-        }
-
-        .section-title {
-            border-left: 4px solid var(--orange);
-            padding-left: 15px;
-            margin-bottom: 30px;
-            font-size: 22px;
-            text-transform: uppercase;
-        }
-
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
-            gap: 25px; 
-        }
-
-        /* Карточкалар */
-        .card { 
-            background: var(--card); 
-            border-radius: 20px; 
-            overflow: hidden; 
-            border: 1px solid rgba(255,255,255,0.05); 
-            transition: 0.3s;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .card:hover { 
-            transform: translateY(-8px); 
-            border-color: var(--blue);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .img-box { position: relative; width: 100%; height: 200px; overflow: hidden; }
-        .card-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .card:hover .card-img { scale: 1.1; }
-
-        .card-content { padding: 20px; flex-grow: 1; }
-        .card-cat { 
-            color: var(--orange); 
-            font-size: 11px; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            margin-bottom: 10px;
-            display: block;
-        }
-        
-        .card-title { 
-            font-size: 19px; 
-            margin: 0 0 12px 0; 
-            font-weight: bold; 
-            line-height: 1.4;
-            color: #fff;
-        }
-        
-        .card-text { 
-            font-size: 14px; 
-            color: #94a3b8; 
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
+        .card-body { padding: 30px 20px 20px; }
+        .card-body h3 { margin: 0 0 10px; font-size: 1.2rem; color: var(--gold); }
+        .card-body p { font-size: 14px; color: #a0aec0; line-height: 1.5; height: 65px; overflow: hidden; }
 
         .card-footer {
-            margin-top: auto;
-            padding: 15px 20px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        /* МОБИЛ ВЕРСИЯ */
-        @media (max-width: 950px) {
-            header { padding: 0 20px; }
-            .burger { display: block; }
-            
-            .nav-menu { 
-                position: fixed; 
-                top: 75px; 
-                left: -100%; 
-                width: 100%; 
-                height: calc(100vh - 75px);
-                background: #0f172a; 
-                flex-direction: column; 
-                padding: 30px; 
-                transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-                z-index: 999;
-            }
-            
-            .nav-menu.open { left: 0; }
-            
-            .nav-menu a { 
-                font-size: 20px; 
-                padding: 15px 0; 
-                border-bottom: 1px solid rgba(255,255,255,0.05); 
-                width: 100%;
-                border-radius: 0;
-            }
-
-            .grid { grid-template-columns: 1fr; }
-            .container { padding: 20px; }
+            padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex; justify-content: space-between; font-size: 11px; color: #64748b;
         }
     </style>
 </head>
 <body>
 
-<header>
-    <a href="index.html" class="logo"><i class="fas fa-handshake"></i> ЧОЙХОНА</a>
-    <div class="burger" onclick="toggleMenu()" id="b-icon"><i class="fas fa-bars"></i></div>
-    <nav class="nav-menu" id="nav-menu">
-        <a href="index.html" class="active">Асосий</a>
-        <a href="cinema.html">Кинотеатр</a>
-        <a href="radio.html">Радио</a>
-        <a href="poetry.html">Шеърият</a>
-        <a href="fishing.html">Балиқ ови</a>
-        <a href="health.html">Саломатлик</a>
-        <a href="admin.html" style="color: var(--orange);">Админ</a>
-    </nav>
-</header>
+    <header>
+        <div class="logo-box"><img src="log.webp" alt="L1"></div>
 
-<div class="container">
-    <h2 class="section-title">Янги мақолалар</h2>
-    <div class="grid" id="main-grid">
-        </div>
-</div>
+        <i class="fas fa-bars menu-toggle" onclick="toggleMenu()"></i>
 
-<script>
-    // Менюни очиш ва ёпиш
-    function toggleMenu() {
-        const menu = document.getElementById('nav-menu');
-        const icon = document.querySelector('#b-icon i');
-        menu.classList.toggle('open');
-        
-        if(menu.classList.contains('open')) {
-            icon.classList.replace('fa-bars', 'fa-times');
-        } else {
-            icon.classList.replace('fa-times', 'fa-bars');
-        }
-    }
+        <nav class="nav-menu" id="nav-menu">
+            <a href="index.html" class="active">Асосий</a>
+            <a href="cinema.html">Кинотеатр</a>
+            <a href="radio.html">Радио</a>
+            <a href="poetry.html">Шеърият</a>
+            <a href="fishing.html">Балиқ ови</a>
+            <a href="health.html">Саломатлик</a>
+            <a href="admin.html" style="color: var(--orange);">Админ</a>
+        </nav>
 
-    // Маълумотларни юклаш
-    function loadData() {
-        const grid = document.getElementById('main-grid');
-        const localData = JSON.parse(localStorage.getItem('choyhona_posts')) || [];
-        
-        if (localData.length === 0) {
-            grid.innerHTML = `
-                <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
-                    <i class="fas fa-folder-open fa-3x" style="color: #334155; margin-bottom: 15px;"></i>
-                    <p style="color: #64748b;">Ҳозирча мақолалар йўқ. Админ бўлимидан қўшинг.</p>
-                </div>`;
-            return;
+        <div class="logo-box"><img src="logo.webp" alt="L2"></div>
+    </header>
+
+    <div class="container">
+        <h2 style="text-align:center; color:var(--gold); letter-spacing:2px;">ХУШ КЕЛИБСИЗ</h2>
+        <div class="grid" id="data-container">
+            </div>
+    </div>
+
+    <script>
+        // Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDGW-7Yhgx7myEpz9rlzrbtExwb03tnszs",
+            authDomain: "chayhananamangan.firebaseapp.com",
+            projectId: "chayhananamangan",
+            storageBucket: "chayhananamangan.firebasestorage.app",
+            messagingSenderId: "600906823282",
+            appId: "1:600906823282:web:e6756453dcb3351ffe34eb"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Мобил менюни очиш/ёпиш
+        function toggleMenu() {
+            document.getElementById('nav-menu').classList.toggle('active');
         }
 
-        grid.innerHTML = "";
-        
-        // Фақат Асосий саҳифа ёки Янгиликларни чиқариш
-        const filtered = localData.filter(i => i.category === 'main' || i.category === 'news' || i.category === 'poetry');
-
-        filtered.reverse().forEach(item => {
-            // Расмни аниқлаш
-            let finalImg = "https://via.placeholder.com/400x200/1e293b/00d4ff?text=No+Image";
-            
-            if (item.image && item.image !== "") {
-                finalImg = item.image;
-            } else if (item.video) {
-                finalImg = `https://img.youtube.com/vi/${item.video}/maxresdefault.jpg`;
-            }
-
-            grid.innerHTML += `
-                <div class="card">
-                    <div class="img-box">
-                        <img src="${finalImg}" class="card-img" alt="image">
-                    </div>
-                    <div class="card-content">
-                        <span class="card-cat">${item.category}</span>
-                        <h3 class="card-title">${item.title}</h3>
-                        <p class="card-text">${item.content.substring(0, 120)}...</p>
-                    </div>
-                    <div class="card-footer">
-                        <span><i class="far fa-calendar-alt"></i> ${item.date ? item.date.split(',')[0] : 'Яқинда'}</span>
-                        <span><i class="far fa-eye"></i> ${item.views || 0}</span>
-                    </div>
-                </div>`;
+        // Маълумотларни юклаш
+        db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snap => {
+            const container = document.getElementById('data-container');
+            container.innerHTML = "";
+            snap.forEach(doc => {
+                const p = doc.data();
+                let img = p.image || (p.video ? `https://img.youtube.com/vi/${p.video}/maxresdefault.jpg` : 'https://via.placeholder.com/400x200');
+                
+                container.innerHTML += `
+                    <div class="post-card">
+                        <img src="${img}" class="card-img">
+                        <div class="tea-master"><i class="fas fa-mug-hot"></i></div>
+                        <div class="card-body">
+                            <small style="color:var(--orange)">${p.category}</small>
+                            <h3>${p.title}</h3>
+                            <p>${p.content}</p>
+                        </div>
+                        <div class="card-footer">
+                            <span><i class="far fa-clock"></i> ${p.date}</span>
+                            <span style="color:var(--gold); cursor:pointer">Ўқиш <i class="fas fa-arrow-right"></i></span>
+                        </div>
+                    </div>`;
+            });
         });
-    }
-
-    // Экран юкланганда ишласин
-    window.onload = loadData;
-    
-    // Менюдан ташқари босилганда ёпиш
-    document.addEventListener('click', (e) => {
-        const menu = document.getElementById('nav-menu');
-        const burger = document.getElementById('b-icon');
-        if (!menu.contains(e.target) && !burger.contains(e.target)) {
-            menu.classList.remove('open');
-            document.querySelector('#b-icon i').classList.replace('fa-times', 'fa-bars');
-        }
-    });
-</script>
-
+    </script>
 </body>
 </html>
